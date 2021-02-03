@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:refrescate/ui/component/home/HomeView.dart';
-import 'package:refrescate/ui/component/login/LoginView.dart';
-import 'package:refrescate/ui/component/order/OrderView.dart';
-import 'package:refrescate/ui/component/register/finalRegisterView.dart';
+import 'package:refrescate/ui/component/order/OrderScreen.dart';
 import 'package:refrescate/ui/component/register/mainRegisterView.dart';
 
 class Menu extends StatefulWidget {
@@ -16,7 +14,7 @@ class Menu extends StatefulWidget {
 class _MenuState extends State<Menu> {
   int selectedItem = 1;
   int aux;
-  List<Widget> screens = [OrderView(), HomeView(), MainRegisterView()];
+  List<Widget> screens = [OrderScreen(), HomeView(), MainRegisterView()];
 
   @override
   Widget build(BuildContext context) {

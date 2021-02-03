@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:refrescate/data/HttpRemoteRepository.dart';
+import 'package:refrescate/data/RemoteRepository.dart';
+import 'package:refrescate/ui/component/order/OrderPresenter.dart';
 
-class OrderView extends StatefulWidget {
+class OrderScreen extends StatefulWidget {
   @override
-  _OrderViewState createState() => _OrderViewState();
+  _OrderScreenState createState() => _OrderScreenState();
 }
 
-class _OrderViewState extends State<OrderView> {
+class _OrderScreenState extends State<OrderScreen> implements OrderView {
+  OrderPresenter presenter;
+  RemoteRepository remoteRepository;
+
+  @override
+  void initState() {
+    remoteRepository = HttpRemoteRepository(Client());
+    presenter = OrderPresenter(this, remoteRepository);
+    presenter.init();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;

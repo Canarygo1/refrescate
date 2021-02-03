@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:refrescate/ui/component/bottomMenu/Menu.dart';
-import 'package:refrescate/ui/component/login/LoginView.dart';
-import 'package:refrescate/ui/component/orderInfo/OrderInfoView.dart';
-import 'package:refrescate/ui/component/productCart/ProductCartView.dart';
-import 'package:refrescate/ui/component/productInfo/ProductInfoView.dart';
-import 'package:refrescate/ui/component/register/finalRegisterView.dart';
-import 'package:refrescate/ui/component/register/mainRegisterView.dart';
-import 'package:refrescate/ui/component/register/secondRegisterView.dart';
+import 'package:refrescate/ui/component/order/OrderScreen.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -22,7 +17,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: LoginView(),
+      home: Menu(),
     );
   }
 }

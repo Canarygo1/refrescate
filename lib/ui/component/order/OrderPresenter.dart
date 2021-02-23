@@ -9,16 +9,16 @@ class OrderPresenter{
 
   init() async {
     try{
-      String userId = "079a48bb-b836-40d7-b11d-5711354fc843";
-      List<Order> query = await _remoteRepository.getOrders(userId);
+      String userId = "4ad8d937-52a4-4f43-a435-bfad4a879e5a";
 
-
+      List<Order> orders = await _remoteRepository.getOrders(userId);
+      _view.setOrders(orders);
     }catch(e){
-
+      print(e);
     }
 
   }
 }
 abstract class OrderView{
-
+  setOrders(List<Order> newOrders);
 }

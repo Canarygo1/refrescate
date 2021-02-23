@@ -1,11 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
+import 'package:refrescate/data/HttpRemoteRepository.dart';
+import 'package:refrescate/data/RemoteRepository.dart';
+import 'package:refrescate/data/cubit/cart_cubit.dart';
+import 'package:refrescate/model/CarritosItems.dart';
+import 'package:refrescate/model/Product.dart';
+import 'package:refrescate/model/cart.dart';
+import 'package:refrescate/ui/component/productInfo/ProductInfoPresenter.dart';
 
-class ProductInfoView extends StatefulWidget {
+class ProductInfoScreen extends StatefulWidget {
+  final Product product;
+
+  const ProductInfoScreen({Key key, this.product}) : super(key: key);
+
   @override
-  _ProductInfoViewState createState() => _ProductInfoViewState();
+  _ProductInfoScreenState createState() => _ProductInfoScreenState();
 }
 
-class _ProductInfoViewState extends State<ProductInfoView> {
+class _ProductInfoScreenState extends State<ProductInfoScreen>
+    implements ProductInfoView {
+  ProductInfoPresenter presenter;
+  RemoteRepository remoteRepository;
+  String productQuantity;
+  Iterable<CarritosItems> carritoItem;
+
+  @override
+  void initState() {
+    final cartCubit = context.read<CartCubit>();
+
+    remoteRepository = HttpRemoteRepository(Client());
+    presenter = ProductInfoPresenter(this, remoteRepository, cartCubit);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -47,7 +75,7 @@ class _ProductInfoViewState extends State<ProductInfoView> {
               Padding(
                 padding: EdgeInsets.only(left: 20.0),
                 child: Text(
-                  "Botella 8L Fonteinde",
+                  widget.product.nombre,
                   style: TextStyle(
                     fontSize: 16.0,
                     color: Colors.white,
@@ -74,7 +102,8 @@ class _ProductInfoViewState extends State<ProductInfoView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
-                          height: height < sizeCut ? height * 0.09 : height * 0.15,
+                          height:
+                              height < sizeCut ? height * 0.09 : height * 0.15,
                         ),
                         Padding(
                           padding: EdgeInsets.only(left: 20.0),
@@ -93,7 +122,7 @@ class _ProductInfoViewState extends State<ProductInfoView> {
                         Padding(
                           padding: EdgeInsets.only(left: 20.0, right: 10.0),
                           child: Text(
-                            'Agua mineral de mineralización débil, de las cumbres de la Orotava.\nApta para bebés.',
+                            widget.product.descripcion,
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 12.0,
@@ -101,7 +130,8 @@ class _ProductInfoViewState extends State<ProductInfoView> {
                           ),
                         ),
                         SizedBox(
-                          height: height < sizeCut ? height * 0.03 : height * 0.07,
+                          height:
+                              height < sizeCut ? height * 0.03 : height * 0.07,
                         ),
                         Padding(
                           padding: EdgeInsets.only(left: 20.0),
@@ -123,7 +153,8 @@ class _ProductInfoViewState extends State<ProductInfoView> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   IconButton(
                                       icon: Icon(
@@ -131,7 +162,15 @@ class _ProductInfoViewState extends State<ProductInfoView> {
                                         color: Colors.blue,
                                         size: 35.0,
                                       ),
-                                      onPressed: () => {}),
+                                      onPressed: () => carritoItem.isEmpty
+                                          ? null
+                                          : carritoItem.first.cantidad - 1 == 0
+                                              ? presenter.deleteProductCart(
+                                                  carritoItem.first.id)
+                                              : presenter.updateProductCart(
+                                                  carritoItem.first.id,
+                                                  carritoItem.first.cantidad -
+                                                      1)),
                                   Text(
                                     " - ",
                                     style: TextStyle(
@@ -146,22 +185,44 @@ class _ProductInfoViewState extends State<ProductInfoView> {
                                         color: Colors.blue,
                                         size: 35.0,
                                       ),
-                                      onPressed: () => {}),
+                                      onPressed: () => carritoItem.isEmpty
+                                          ? presenter.addProductToCart(
+                                              widget.product.id)
+                                          : presenter.updateProductCart(
+                                              carritoItem.first.id,
+                                              carritoItem.first.cantidad + 1)),
                                 ],
                               ),
-                              Text(
-                                "2 Unidades",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                  fontSize: 16.0,
-                                ),
-                              )
+                              BlocBuilder<CartCubit, CartState>(
+                                  builder: (context, state) {
+                                if (state is CartLoaded) {
+                                  print("Widget Id " + widget.product.id);
+                                  //Todo estaria bien hacerlo en otro sitio para capturar posible errores.
+                                  carritoItem = state.cart.carritosItems.where(
+                                      (element) => element.producto.id
+                                          .contains(widget.product.id));
+
+                                  return Text(
+                                    carritoItem.isEmpty
+                                        ? "0 Unidades"
+                                        : carritoItem.first.cantidad
+                                                .toString() +
+                                            " Unidades",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                      fontSize: 16.0,
+                                    ),
+                                  );
+                                }
+                                return Container();
+                              })
                             ],
                           ),
                         ),
                         SizedBox(
-                          height: height < sizeCut ? height * 0.03 : height * 0.05,
+                          height:
+                              height < sizeCut ? height * 0.03 : height * 0.05,
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -176,14 +237,28 @@ class _ProductInfoViewState extends State<ProductInfoView> {
                                   fontSize: 16.0,
                                 ),
                               ),
-                              Text(
-                                "2,93€",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                  fontSize: 16.0,
-                                ),
-                              )
+                              BlocBuilder<CartCubit, CartState>(
+                                  builder: (context, state) {
+                                if (state is CartLoaded) {
+                                  Iterable<CarritosItems> carritoItem = state
+                                      .cart.carritosItems
+                                      .where((element) => element.producto.id
+                                          .contains(widget.product.id));
+                                  double precio = carritoItem.isEmpty
+                                      ? 0
+                                      : carritoItem.first.cantidad *
+                                          carritoItem.first.producto.precio;
+                                  return Text(
+                                    precio.toString() + "€",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                      fontSize: 16.0,
+                                    ),
+                                  );
+                                }
+                                return Container();
+                              })
                             ],
                           ),
                         ),
@@ -260,7 +335,11 @@ class _ProductInfoViewState extends State<ProductInfoView> {
                     top: 55,
                     left: 20.0,
                     child: Text(
-                      "1,46€/unidad",
+                      widget.product.precio.toString() +
+                          "€ / " +
+                          widget.product.cantidadLote.toString() +
+                          " " +
+                          widget.product.tipoUnidad,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 14.0,
@@ -275,5 +354,24 @@ class _ProductInfoViewState extends State<ProductInfoView> {
         ),
       ),
     );
+  }
+
+  @override
+  productQuantityError() {
+    // TODO: implement productQuantityError
+    throw UnimplementedError();
+  }
+
+  @override
+  productQuantityUpdated(int quantity) {
+    // TODO: implement productQuantityUpdated
+    throw UnimplementedError();
+  }
+
+  @override
+  setInitialQuantity(String initialQuantity) {
+    setState(() {
+      productQuantity = initialQuantity;
+    });
   }
 }

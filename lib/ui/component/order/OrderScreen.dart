@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:refrescate/data/HttpRemoteRepository.dart';
 import 'package:refrescate/data/RemoteRepository.dart';
+import 'package:refrescate/model/Order.dart';
 import 'package:refrescate/ui/component/order/OrderPresenter.dart';
+import 'package:refrescate/ui/component/orderInfo/OrderInfoView.dart';
 
 class OrderScreen extends StatefulWidget {
   @override
@@ -12,6 +14,7 @@ class OrderScreen extends StatefulWidget {
 class _OrderScreenState extends State<OrderScreen> implements OrderView {
   OrderPresenter presenter;
   RemoteRepository remoteRepository;
+  List<Order> orders = [];
 
   @override
   void initState() {
@@ -20,6 +23,7 @@ class _OrderScreenState extends State<OrderScreen> implements OrderView {
     presenter.init();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -49,9 +53,11 @@ class _OrderScreenState extends State<OrderScreen> implements OrderView {
             ListView.builder(
                 shrinkWrap: true,
                 primary: false,
-                itemCount: 5,
+                itemCount: orders.length,
                 scrollDirection: Axis.vertical,
-                itemBuilder: (context, indexTipo) {
+                itemBuilder: (context, index) {
+                  String id = orders[index].id.split("-")[0];
+                  List<String> date = orders[index].fechaEntrega.split("-");
                   return Container(
                     margin: EdgeInsets.all(20.0),
                     width: width,
@@ -59,8 +65,14 @@ class _OrderScreenState extends State<OrderScreen> implements OrderView {
                       gradient: LinearGradient(
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
-                          stops: [0.05, 0.05],
-                          colors: [Colors.green, Colors.orangeAccent]),
+                          stops: [
+                            0.03,
+                            0.03
+                          ],
+                          colors: [
+                            Colors.green,
+                            Color.fromRGBO(247, 247, 247, 1)
+                          ]),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     child: Column(
@@ -71,40 +83,47 @@ class _OrderScreenState extends State<OrderScreen> implements OrderView {
                           height: 15.0,
                         ),
                         Text(
-                          "#ED01234",
+                          "#" + id,
                           style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                         SizedBox(
                           height: 10.0,
                         ),
                         Text(
-                          "Viernes 8 de Noviembre",
+                          date[2]+'-'+date[1]+'-'+date[0],
                           style: TextStyle(
                             fontSize: 18.0,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                         SizedBox(
                           height: 10.0,
                         ),
                         Text(
-                          "30€",
+                          orders[index].precioTotal.toString(),
                           style: TextStyle(
                             fontSize: 18.0,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                         SizedBox(
                           height: 10.0,
                         ),
                         RaisedButton(
-                          onPressed: () => {},
+                          onPressed: () => {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        OrderInfoView(order: orders[index])))
+                          },
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 15.0),
                             child: Text(
                               "Ver pedido",
                               style: TextStyle(
@@ -131,5 +150,12 @@ class _OrderScreenState extends State<OrderScreen> implements OrderView {
         ),
       ),
     );
+  }
+
+  @override
+  setOrders(List<Order> newOrders) {
+    setState(() {
+      orders = newOrders;
+    });
   }
 }

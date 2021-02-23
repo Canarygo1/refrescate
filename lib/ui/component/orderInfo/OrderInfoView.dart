@@ -1,8 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:refrescate/model/Order.dart';
 
 class OrderInfoView extends StatefulWidget {
+  final Order order;
+
+  const OrderInfoView({Key key, this.order}) : super(key: key);
+
   @override
   _OrderInfoViewState createState() => _OrderInfoViewState();
 }
@@ -13,6 +18,7 @@ class _OrderInfoViewState extends State<OrderInfoView> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     double sizeCut = 600.0;
+    List<String> date = widget.order.fechaEntrega.split('-');
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.blue,
@@ -37,7 +43,7 @@ class _OrderInfoViewState extends State<OrderInfoView> {
                 padding: EdgeInsets.only(right: 20.0),
                 alignment: Alignment.centerRight,
                 child: Text(
-                  "#EDO1234",
+                  widget.order.id.split("-")[0].toUpperCase(),
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
@@ -64,7 +70,7 @@ class _OrderInfoViewState extends State<OrderInfoView> {
               Padding(
                 padding: EdgeInsets.only(left: 20.0),
                 child: Text(
-                  "Viernes 8 de Noviembre 2020",
+                  date[2] + '-' + date[1] + '-' + date[0],
                   style: TextStyle(
                     fontSize: 16.0,
                     color: Colors.white,
@@ -109,38 +115,46 @@ class _OrderInfoViewState extends State<OrderInfoView> {
                           height: 20.0,
                         ),
                         Container(
-                          height: height < sizeCut ? height * 0.28 : height * 0.38,
+                          height:
+                              height < sizeCut ? height * 0.28 : height * 0.38,
                           child: ListView.builder(
                               itemExtent: 185 / 2.7,
                               primary: false,
-                              itemCount: 6,
+                              itemCount:
+                                  widget.order.carritos.carritosItems.length,
                               scrollDirection: Axis.vertical,
-                              itemBuilder: (context, indexTipo) {
+                              itemBuilder: (context, index) {
                                 return Align(
                                   alignment: Alignment.topCenter,
                                   child: Row(
                                     mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                        MainAxisAlignment.spaceAround,
                                     children: [
                                       Container(
                                         width: (width) / 2,
                                         child: Row(
                                           mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
+                                              MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Container(
                                               padding: EdgeInsets.all(5.0),
                                               decoration: BoxDecoration(
                                                 color: Colors.blue,
                                                 borderRadius:
-                                                BorderRadius.circular(5.0),
+                                                    BorderRadius.circular(5.0),
                                               ),
                                               height: height * 0.07,
                                               width: width * 0.15,
-                                              child: Image.asset("assets/trashIcon.png"),
+                                              child: Image.asset(
+                                                  "assets/trashIcon.png"),
                                             ),
                                             Text(
-                                              "Cerveza Turia\n12 unidades",
+                                              widget
+                                                  .order
+                                                  .carritos
+                                                  .carritosItems[index]
+                                                  .producto
+                                                  .nombre,
                                               style: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 12.0,
@@ -153,17 +167,26 @@ class _OrderInfoViewState extends State<OrderInfoView> {
                                         width: (width) / 2,
                                         child: Row(
                                           mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
+                                              MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Text(
-                                              "x2",
+                                              widget.order.carritos
+                                                  .carritosItems[index].cantidad
+                                                  .toString(),
                                               style: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 12.0,
                                               ),
                                             ),
                                             Text(
-                                              "6,90€",
+                                              widget
+                                                      .order
+                                                      .carritos
+                                                      .carritosItems[index]
+                                                      .producto
+                                                      .precio
+                                                      .toString() +
+                                                  "€",
                                               style: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 12.0,
@@ -187,7 +210,8 @@ class _OrderInfoViewState extends State<OrderInfoView> {
                           color: Colors.blue,
                         ),
                         SizedBox(
-                          height: height < sizeCut ? height * 0.03 : height * 0.05,
+                          height:
+                              height < sizeCut ? height * 0.03 : height * 0.05,
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -203,7 +227,7 @@ class _OrderInfoViewState extends State<OrderInfoView> {
                                 ),
                               ),
                               Text(
-                                "2,93€",
+                                widget.order.precioTotal.toString() + "€",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
@@ -220,7 +244,7 @@ class _OrderInfoViewState extends State<OrderInfoView> {
                     top: height < sizeCut ? height * 0.05 : 0.0,
                     right: width * 0.08,
                     child: Image.asset(
-                        "assets/trashIcon.png",
+                      "assets/trashIcon.png",
                       scale: height < sizeCut ? 4.5 : 3.5,
                     ),
                   ),
@@ -239,7 +263,7 @@ class _OrderInfoViewState extends State<OrderInfoView> {
                     top: 55,
                     left: 20.0,
                     child: Text(
-                      "30€",
+                      widget.order.precioTotal.toString() + "€",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18.0,

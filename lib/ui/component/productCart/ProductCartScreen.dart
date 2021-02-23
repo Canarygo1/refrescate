@@ -1,20 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:refrescate/data/cubit/cart_cubit.dart';
+import 'package:refrescate/model/CarritosItems.dart';
+import 'package:refrescate/model/cart.dart';
+import 'package:refrescate/ui/component/productCart/ProductCartPresenter.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-class ProductCartView extends StatefulWidget {
+class ProductCartScreen extends StatefulWidget {
+  const ProductCartScreen({Key key}) : super(key: key);
+
   @override
-  _ProductCartViewState createState() => _ProductCartViewState();
+  _ProductCartScreenState createState() => _ProductCartScreenState();
 }
 
-class _ProductCartViewState extends State<ProductCartView>
-    with TickerProviderStateMixin {
+class _ProductCartScreenState extends State<ProductCartScreen>
+    with TickerProviderStateMixin
+    implements ProductCartView {
   AnimationController _animationController;
   CalendarController _calendarController;
   DateTime _selectedDay = DateTime.now();
+  ProductCartPresenter presenter;
+  String totalPrice;
+  Cart currentCart;
+  _afterLayout() async {
+      await presenter.calculateFinalPrice(currentCart);
+  }
 
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _afterLayout());
+    final cartCubit = context.read<CartCubit>();
+
+    totalPrice = "0";
+    presenter = ProductCartPresenter(this,cartCubit);
     initializeDateFormatting("es_ES");
     _calendarController = CalendarController();
     _animationController = AnimationController(
@@ -43,6 +62,7 @@ class _ProductCartViewState extends State<ProductCartView>
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
+      key: Key("TEST01"),
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.blue,
       body: GestureDetector(
@@ -113,72 +133,25 @@ class _ProductCartViewState extends State<ProductCartView>
                         ),
                         Container(
                           height: height * 0.4,
-                          child: ListView.builder(
-                              itemExtent: 185 / 2.7,
-                              primary: false,
-                              itemCount: 6,
-                              scrollDirection: Axis.vertical,
-                              itemBuilder: (context, indexTipo) {
-                                return Align(
-                                  alignment: Alignment.topCenter,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Container(
-                                        width: (width) / 2,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.all(5.0),
-                                              decoration: BoxDecoration(
-                                                color: Colors.blue,
-                                                borderRadius:
-                                                    BorderRadius.circular(5.0),
-                                              ),
-                                              height: height * 0.07,
-                                              width: width * 0.15,
-                                              child: Image.asset("assets/trashIcon.png"),
-                                            ),
-                                            Text(
-                                              "Cerveza Turia\n12 unidades",
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 12.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        width: (width) / 2,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Text(
-                                              "x2",
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 12.0,
-                                              ),
-                                            ),
-                                            Text(
-                                              "6,90€",
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 12.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }),
+                          child: BlocBuilder<CartCubit, CartState>(
+                              builder: (context, state) {
+                            if (state is CartLoaded) {
+                              currentCart  = state.cart;
+                              return ListView.builder(
+                                  itemExtent: 185 / 2.7,
+                                  primary: false,
+                                  itemCount: state.cart.carritosItems.length,
+                                  scrollDirection: Axis.vertical,
+                                  itemBuilder: (context, indexTipo) {
+                                    CarritosItems carritosItem =
+                                        state.cart.carritosItems[indexTipo];
+                                    return cartItemsList(
+                                        width, height, carritosItem);
+                                  });
+                            }
+
+                            return Container();
+                          }),
                         ),
                         SizedBox(
                           height: 15.0,
@@ -206,7 +179,7 @@ class _ProductCartViewState extends State<ProductCartView>
                                 ),
                               ),
                               Text(
-                                "2,93€",
+                                totalPrice + "€",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
@@ -245,7 +218,7 @@ class _ProductCartViewState extends State<ProductCartView>
                               minWidth: 150,
                               height: 50.0,
                               child: RaisedButton(
-                                onPressed: () => {},
+                                onPressed: () => presenter.createOrder(totalPrice, _selectedDay),
                                 child: Text(
                                   "Finalizar compra",
                                   style: TextStyle(
@@ -271,6 +244,66 @@ class _ProductCartViewState extends State<ProductCartView>
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Align cartItemsList(
+      double width, double height, CarritosItems carritosItems) {
+    double itemPrice = carritosItems.cantidad * carritosItems.producto.precio;
+    return Align(
+      alignment: Alignment.topCenter,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            width: (width) / 2,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(5.0),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  height: height * 0.07,
+                  width: width * 0.15,
+                  child: Image.asset("assets/trashIcon.png"),
+                ),
+                Text(
+                  carritosItems.producto.nombre,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 12.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: (width) / 2,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  "x" + carritosItems.cantidad.toString(),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 12.0,
+                  ),
+                ),
+                Text(
+                  itemPrice.toString().replaceAll(".", ",") + "€",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 12.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -362,7 +395,18 @@ class _ProductCartViewState extends State<ProductCartView>
 
   String getInitialLetterDays(DateTime dateTime, dynamic) {
     Intl.defaultLocale = "es_ES";
-    String day = dateTime.weekday == 3 ? "X" : DateFormat("EEEE").format(dateTime).substring(0, 1).toUpperCase();
+    String day = dateTime.weekday == 3
+        ? "X"
+        : DateFormat("EEEE").format(dateTime).substring(0, 1).toUpperCase();
     return day;
   }
+
+  @override
+  setFinalPrice(double finalPrice) {
+      setState(() {
+        totalPrice = finalPrice.toString();
+      });
+  }
+
+
 }

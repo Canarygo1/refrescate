@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import 'package:refrescate/model/Order.dart';
 import 'package:refrescate/model/Product.dart';
 import 'package:refrescate/model/cart.dart';
+import 'package:refrescate/model/category.dart';
 import 'RemoteRepository.dart';
 
 class HttpRemoteRepository implements RemoteRepository {
@@ -35,11 +36,11 @@ class HttpRemoteRepository implements RemoteRepository {
   }
 
   @override
-  Future<bool> addItemCart(String userId, String cartId,
-      String productId) async {
+  Future<bool> addItemCart(
+      String userId, String cartId, String productId) async {
     // TODO: implement addItemCart
     var uri =
-    Uri.parse(endpoint + "user/" + userId + "/cart/" + cartId + "/items");
+        Uri.parse(endpoint + "user/" + userId + "/cart/" + cartId + "/items");
     var body = jsonEncode({'Cantidad': 1, 'CarritosItemProductoId': productId});
     var response = await _client.post(uri,
         headers: {"Content-Type": "application/json"}, body: body);
@@ -48,8 +49,8 @@ class HttpRemoteRepository implements RemoteRepository {
   }
 
   @override
-  Future<bool> deleteCartItem(String userId, String cartId,
-      String cartItemId) async {
+  Future<bool> deleteCartItem(
+      String userId, String cartId, String cartItemId) async {
     var uri = Uri.parse(endpoint +
         "user/" +
         userId +
@@ -62,8 +63,8 @@ class HttpRemoteRepository implements RemoteRepository {
   }
 
   @override
-  Future<bool> updateCartItemQuantity(String userId, String cartId,
-      String cartItemId, int quantity) async {
+  Future<bool> updateCartItemQuantity(
+      String userId, String cartId, String cartItemId, int quantity) async {
 //user/:userId/cart/:cartId/items/:itemId
     var uri = Uri.parse(endpoint +
         "user/" +
@@ -86,20 +87,24 @@ class HttpRemoteRepository implements RemoteRepository {
     var response = await _client.get(uri);
     List<dynamic> data = json.decode(response.body)['result'];
     List<Order> orders = [];
-
     for (int i = 0; i < data.length; i++) {
       Order order = Order.fromJson(data[i]);
       orders.add(order);
     }
+    print("Tamaño"+ orders.length.toString());
+
     return orders;
   }
 
   @override
   Future<bool> createOrder(String userId, String fechaEntrega,
-      String businessId, double precioTotal) async{
-    var uri =
-    Uri.parse(endpoint + "user/" + userId + "/orders");
-    var body = jsonEncode({'PedidoNegocioId': businessId, 'FechaEntrega': fechaEntrega, 'PrecioTotal':precioTotal});
+      String businessId, double precioTotal) async {
+    var uri = Uri.parse(endpoint + "user/" + userId + "/orders");
+    var body = jsonEncode({
+      'PedidoNegocioId': businessId,
+      'FechaEntrega': fechaEntrega,
+      'PrecioTotal': precioTotal
+    });
     var response = await _client.post(uri,
         headers: {"Content-Type": "application/json"}, body: body);
     print(response.body);
@@ -108,12 +113,26 @@ class HttpRemoteRepository implements RemoteRepository {
   }
 
   @override
-  Future<bool> createCart(String userId) async{
-    var uri =
-    Uri.parse(endpoint + "user/" + userId + "/cart");
+  Future<bool> createCart(String userId) async {
+    var uri = Uri.parse(endpoint + "user/" + userId + "/cart");
     var body = jsonEncode({'UsuarioCarritoId': userId});
     var response = await _client.post(uri,
         headers: {"Content-Type": "application/json"}, body: body);
     return true;
+  }
+
+  @override
+  Future<List<Category>> getCategories(String businessId) async {
+    var uri = Uri.parse(endpoint + "business/" + businessId + "/categories");
+    var response = await _client.get(uri);
+    print(response.body);
+    List<dynamic> data = json.decode(response.body)['result']['Categorias'];
+    List<Category> categories = [];
+
+    for (int i = 0; i < data.length; i++) {
+      Category category = Category.fromJson(data[i]);
+      categories.add(category);
+    }
+    return categories;
   }
 }

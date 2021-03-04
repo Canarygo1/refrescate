@@ -1,6 +1,7 @@
 import 'package:refrescate/model/Order.dart';
 import 'package:refrescate/model/Product.dart';
 import 'package:refrescate/model/cart.dart';
+import 'package:refrescate/model/category.dart';
 
 abstract class RemoteRepository{
 
@@ -12,4 +13,5 @@ abstract class RemoteRepository{
   Future<List<Order>> getOrders(String userId);
   Future<bool> createOrder(String userId, String fechaEntrega,String businessId, double precioTotal);
   Future<bool> createCart(String userId);
+  Future<List<Category>> getCategories(String businessId);
 }

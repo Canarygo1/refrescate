@@ -24,6 +24,20 @@ class CartLoaded extends CartState {
   int get hashCode => cart.hashCode;
 }
 
+class OrderCompleted extends CartState {
+  final bool isOrderCompleted;
+  const OrderCompleted(this.isOrderCompleted);
+
+  @override
+  bool operator ==(Object o) {
+    if (identical(this, o)) return true;
+
+    return o is OrderCompleted && o.isOrderCompleted == isOrderCompleted;
+  }
+
+  @override
+  int get hashCode => isOrderCompleted.hashCode;
+}
 
 class SetPrice extends CartState {
   final String price;

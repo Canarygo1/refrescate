@@ -20,13 +20,15 @@ class ProductCartPresenter {
     }
   }
 
-  createOrder(String precioTotal, DateTime fechaEntrega){
+  createOrder(String precioTotal, DateTime fechaEntrega) async {
     String userId = "4ad8d937-52a4-4f43-a435-bfad4a879e5a";
     String fechaEntregaParse = fechaEntrega.toString().split(" ")[0];
-    _cartCubit.createOrder(userId, fechaEntregaParse, double.parse(precioTotal));
+    bool condition = await _cartCubit.createOrder(userId, fechaEntregaParse, double.parse(precioTotal));
+    _view.changeOrderStatus(condition);
   }
 }
 
 abstract class ProductCartView {
   setFinalPrice(double finalPrice);
+  changeOrderStatus(bool orderStatus);
 }

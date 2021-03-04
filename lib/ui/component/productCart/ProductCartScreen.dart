@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:refrescate/data/cubit/cart_cubit.dart';
 import 'package:refrescate/model/CarritosItems.dart';
+import 'package:refrescate/model/MaskedTextInputFormatter.dart';
 import 'package:refrescate/model/cart.dart';
 import 'package:refrescate/ui/component/productCart/ProductCartPresenter.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -24,16 +26,18 @@ class _ProductCartScreenState extends State<ProductCartScreen>
   ProductCartPresenter presenter;
   String totalPrice;
   Cart currentCart;
+  bool orderStatus = false;
+  StateSetter alertOrderSetState;
+
   _afterLayout() async {
-      await presenter.calculateFinalPrice(currentCart);
+    await presenter.calculateFinalPrice(currentCart);
   }
 
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) => _afterLayout());
     final cartCubit = context.read<CartCubit>();
-
     totalPrice = "0";
-    presenter = ProductCartPresenter(this,cartCubit);
+    presenter = ProductCartPresenter(this, cartCubit);
     initializeDateFormatting("es_ES");
     _calendarController = CalendarController();
     _animationController = AnimationController(
@@ -61,10 +65,12 @@ class _ProductCartScreenState extends State<ProductCartScreen>
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    double bottomInsets = MediaQuery.of(context).viewInsets.bottom;
+
     return Scaffold(
       key: Key("TEST01"),
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.red,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
@@ -74,8 +80,8 @@ class _ProductCartScreenState extends State<ProductCartScreen>
             gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                stops: [0.8, 0.8],
-                colors: [Colors.blue, Colors.white]),
+                stops: [0.5, 0.4],
+                colors: [Colors.red, Colors.white]),
           ),
           child: ListView(
             children: [
@@ -132,11 +138,11 @@ class _ProductCartScreenState extends State<ProductCartScreen>
                           height: 20.0,
                         ),
                         Container(
-                          height: height * 0.4,
+                          height: height * 0.35,
                           child: BlocBuilder<CartCubit, CartState>(
                               builder: (context, state) {
                             if (state is CartLoaded) {
-                              currentCart  = state.cart;
+                              currentCart = state.cart;
                               return ListView.builder(
                                   itemExtent: 185 / 2.7,
                                   primary: false,
@@ -160,7 +166,7 @@ class _ProductCartScreenState extends State<ProductCartScreen>
                           thickness: 3,
                           endIndent: 10.0,
                           indent: 10.0,
-                          color: Colors.blue,
+                          color: Colors.red,
                         ),
                         SizedBox(
                           height: 15.0,
@@ -192,48 +198,333 @@ class _ProductCartScreenState extends State<ProductCartScreen>
                         SizedBox(
                           height: 15.0,
                         ),
+                        false == true
+                            ? Text("Selecciona metodo de pago")
+                            : Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 10, right: 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          icon:
+                                              Image.asset("assets/Tarjeta.png"),
+                                          iconSize: 90,
+                                          onPressed: () {},
+                                        ),
+                                        Text("Cambiar metodo de pago")
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding:  EdgeInsets.only(
+                                          left: 10, right: 10,bottom:MediaQuery.of(context).viewInsets.bottom),
+                                      child: Column(
+                                        children: [
+                                          TextFormField(
+                                            scrollPadding: EdgeInsets.only(bottom:bottomInsets + 40.0),
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [
+                                              MaskedTextInputFormatter(
+                                                mask: 'xxxx-xxxx-xxxx-xxxx',
+                                                separator: '-',
+                                              ),
+                                            ],
+                                            autocorrect: true,
+                                            decoration: InputDecoration(
+                                              hintText: "Número de tarjeta",
+                                              labelText: "Número de tarjeta",
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey,
+                                                    width: 1.5),
+                                              ),
+                                              labelStyle: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                          TextFormField(
+                                            scrollPadding: EdgeInsets.only(bottom:bottomInsets + 40.0),
+                                            autocorrect: true,
+                                            decoration: InputDecoration(
+                                              hintText: "Titular de la tarjeta",
+                                              labelText:
+                                                  "Titular de la tarjeta",
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey,
+                                                    width: 1.5),
+                                              ),
+                                              labelStyle: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Flexible(
+                                                child: TextFormField(
+                                                  scrollPadding: EdgeInsets.only(bottom:bottomInsets + 40.0),
+                                                  keyboardType: TextInputType.number,
+                                                  inputFormatters: [
+                                                    MaskedTextInputFormatter(
+                                                      mask: 'xx/xx',
+                                                      separator: '/',
+                                                    ),
+                                                  ],
+                                                  autocorrect: true,
+                                                  decoration: InputDecoration(
+                                                    hintText: "Caducidad",
+                                                    labelText:
+                                                    "Caducidad",
+                                                    enabledBorder:
+                                                    UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color: Colors.grey,
+                                                          width: 1.5),
+                                                    ),
+                                                    labelStyle: TextStyle(
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Flexible(
+                                                child: TextFormField(
+
+                                                  autocorrect: true,
+                                                  decoration: InputDecoration(
+                                                    hintText: "CVC",
+                                                    labelText:
+                                                    "CVC",
+                                                    enabledBorder:
+                                                    UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color: Colors.grey,
+                                                          width: 1.5),
+                                                    ),
+                                                    labelStyle: TextStyle(
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                        SizedBox(
+                          height: 30.0,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            ButtonTheme(
-                              height: 50.0,
-                              child: RaisedButton(
-                                onPressed: () => {},
-                                child: Text(
-                                  "Continuar Comprando",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12.0,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                false == true
+                                    ? IconButton(
+                                        icon: Image.asset("assets/Tarjeta.png"),
+                                        iconSize: 90,
+                                        onPressed: () {},
+                                      )
+                                    : Container(),
+                                ButtonTheme(
+                                  height: 50.0,
+                                  child: RaisedButton(
+                                    onPressed: () =>
+                                        {Navigator.of(context).pop()},
+                                    child: Text(
+                                      "Continuar Comprando",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12.0,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    color: Color.fromRGBO(247, 247, 247, 1),
                                   ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                color: Color.fromRGBO(56, 118, 200, 1),
-                              ),
+                                )
+                              ],
                             ),
-                            ButtonTheme(
-                              minWidth: 150,
-                              height: 50.0,
-                              child: RaisedButton(
-                                onPressed: () => presenter.createOrder(totalPrice, _selectedDay),
-                                child: Text(
-                                  "Finalizar compra",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12.0,
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  false == true
+                                      ? IconButton(
+                                          icon: Image.asset("assets/bizum.png"),
+                                          iconSize: 98,
+                                          onPressed: () {},
+                                        )
+                                      : Container(),
+                                  ButtonTheme(
+                                    minWidth: 150,
+                                    height: 50.0,
+                                    child: RaisedButton(
+                                      onPressed: () => {
+                                        // presenter.createOrder(
+                                        //     totalPrice, _selectedDay),
+                                        showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                20.0))),
+                                                content: StatefulBuilder(
+                                                  // You need this, notice the parameters below:
+                                                  builder: (BuildContext
+                                                          context,
+                                                      StateSetter setState) {
+                                                    alertOrderSetState =
+                                                        setState;
+                                                    String mainText = orderStatus ==
+                                                            false
+                                                        ? "confirmando tu pedido"
+                                                        : "Pedido confirmado";
+                                                    String secondaryText =
+                                                        orderStatus == false
+                                                            ? "Tardamos 1 segundo, gracias."
+                                                            : "Muchas gracias";
+                                                    int count = 0;
+                                                    return Container(
+                                                      height: height * 0.390,
+                                                      child: Column(
+                                                        children: [
+                                                          Padding(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    bottom:
+                                                                        height *
+                                                                            0.060),
+                                                            child: orderStatus ==
+                                                                    false
+                                                                ? SpinKitCircle(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    size:
+                                                                        height *
+                                                                            0.10,
+                                                                  )
+                                                                : Icon(
+                                                                    Icons
+                                                                        .check_circle_outline,
+                                                                    size:
+                                                                        height *
+                                                                            0.10,
+                                                                    color: Colors
+                                                                        .green,
+                                                                  ),
+                                                          ),
+                                                          Column(
+                                                            children: [
+                                                              Text(
+                                                                mainText,
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              ),
+                                                              Text(
+                                                                secondaryText,
+                                                                style: TextStyle(
+                                                                    color: Color
+                                                                        .fromRGBO(
+                                                                            181,
+                                                                            180,
+                                                                            197,
+                                                                            1)),
+                                                              ),
+                                                              Padding(
+                                                                padding: EdgeInsets.only(
+                                                                    top: height *
+                                                                        0.040),
+                                                                child: Center(
+                                                                  child:
+                                                                      ButtonTheme(
+                                                                    height:
+                                                                        height *
+                                                                            0.055,
+                                                                    minWidth: double
+                                                                        .infinity,
+                                                                    child:
+                                                                        RaisedButton(
+                                                                      onPressed:
+                                                                          () =>
+                                                                              {
+                                                                        Navigator.of(context).popUntil((_) =>
+                                                                            count++ >=
+                                                                            2),
+                                                                      },
+                                                                      child:
+                                                                          Text(
+                                                                        "Volver al menu",
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          fontSize:
+                                                                              12.0,
+                                                                        ),
+                                                                        textAlign:
+                                                                            TextAlign.center,
+                                                                      ),
+                                                                      shape:
+                                                                          RoundedRectangleBorder(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(7.0),
+                                                                      ),
+                                                                      color: Colors
+                                                                          .green,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            })
+                                      },
+                                      child: Text(
+                                        "Finalizar compra",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12.0,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      color: Colors.green,
+                                    ),
                                   ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                color: Colors.green,
-                              ),
-                            ),
+                                ]),
                           ],
                         ),
                       ],
@@ -264,7 +555,7 @@ class _ProductCartScreenState extends State<ProductCartScreen>
                 Container(
                   padding: EdgeInsets.all(5.0),
                   decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: Colors.red,
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                   height: height * 0.07,
@@ -403,10 +694,16 @@ class _ProductCartScreenState extends State<ProductCartScreen>
 
   @override
   setFinalPrice(double finalPrice) {
-      setState(() {
-        totalPrice = finalPrice.toString();
-      });
+    setState(() {
+      totalPrice = finalPrice.toString();
+    });
   }
 
-
+  @override
+  changeOrderStatus(bool orderStatus) {
+    print("Estado de la orden" + orderStatus.toString());
+    alertOrderSetState(() {
+      this.orderStatus = orderStatus;
+    });
+  }
 }

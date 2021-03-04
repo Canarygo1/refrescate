@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import 'package:refrescate/data/HttpRemoteRepository.dart';
 import 'package:refrescate/data/RemoteRepository.dart';
 import 'package:refrescate/model/Product.dart';
+import 'package:refrescate/model/category.dart';
 import 'package:refrescate/ui/component/productCart/ProductCartScreen.dart';
 import 'package:refrescate/ui/component/productInfo/ProductInfoScreen.dart';
 import 'HomePresenter.dart';
@@ -17,12 +18,15 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
   HomePresenter presenter;
   RemoteRepository remoteRepository;
   List<Product> allProducts = [];
-
+  List<Category> mainCategories = [];
+  List<Product> filterProducts = [];
+  String categoryFilterId = "";
   @override
   void initState() {
     remoteRepository = HttpRemoteRepository(Client());
     presenter = HomePresenter(this, remoteRepository);
     presenter.init();
+    presenter.getCategories();
     super.initState();
   }
 
@@ -44,24 +48,30 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
                 itemExtent: width / 4,
                 shrinkWrap: true,
                 primary: false,
-                itemCount: 3,
+                itemCount: mainCategories.length,
                 scrollDirection: Axis.horizontal,
-                itemBuilder: (context, indexTipo) {
+                itemBuilder: (context, index) {
                   return Column(
                     children: [
-                      Container(
-                        width: 65.0,
-                        height: 65.0,
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          shape: BoxShape.circle,
+                      GestureDetector(
+                        onTap: () => {
+                          presenter.categoryFilter(
+                              allProducts, mainCategories[index].id)
+                        },
+                        child: Container(
+                          width: 65.0,
+                          height: 65.0,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            shape: BoxShape.circle,
+                          ),
                         ),
                       ),
                       SizedBox(
                         height: 10.0,
                       ),
                       Text(
-                        "Hola",
+                        mainCategories[index].nombre,
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -94,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
             child: ListView.builder(
                 shrinkWrap: true,
                 primary: false,
-                itemCount: (allProducts.length / 2).ceil(),
+                itemCount: filterProducts.isEmpty ? (allProducts.length / 2).ceil():(filterProducts.length / 2).ceil(),
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) {
                   return Container(
@@ -105,11 +115,13 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
                         shrinkWrap: true,
                         primary: false,
                         itemCount:
-                            (colCounter + 2) > allProducts.length ? 1 : 2,
+                        filterProducts.isEmpty ? (colCounter + 2) > allProducts.length ? 1 : 2:(colCounter + 2) > filterProducts.length ? 1 : 2,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
                           colCounter++;
                           int currentCol = colCounter - 1;
+                          Product product = filterProducts.isEmpty ? allProducts[colCounter - 1]:filterProducts[colCounter - 1];
+
                           return GestureDetector(
                             onTap: () => goToProductDetail(currentCol),
                             child: Container(
@@ -129,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
                                   ),
                                   SizedBox(height: 10.0),
                                   Text(
-                                    allProducts[colCounter - 1]
+                                    product
                                         .nombre
                                         .toString(),
                                     style: TextStyle(
@@ -138,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
                                     ),
                                   ),
                                   Text(
-                                    allProducts[colCounter - 1]
+                                    product
                                         .cantidadLote
                                         .toString(),
                                     style: TextStyle(
@@ -147,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
                                     ),
                                   ),
                                   Text(
-                                    allProducts[colCounter - 1]
+                                    product
                                         .precio
                                         .toString(),
                                     style: TextStyle(
@@ -180,8 +192,24 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
     print(productCol);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ProductInfoScreen(product: allProducts[productCol])),
+      MaterialPageRoute(
+          builder: (context) =>
+              ProductInfoScreen(product: allProducts[productCol])),
     );
   }
 
+  @override
+  setCategories(List<Category> categories) {
+    setState(() {
+      mainCategories = categories;
+    });
+  }
+
+  @override
+  setProductsFilter(List<Product> filterProducts, String filterCategoryId) {
+    setState(() {
+      this.filterProducts = filterProducts;
+      this.categoryFilterId = filterCategoryId;
+    });
+  }
 }

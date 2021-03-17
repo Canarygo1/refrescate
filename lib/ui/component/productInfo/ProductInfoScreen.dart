@@ -6,7 +6,6 @@ import 'package:refrescate/data/RemoteRepository.dart';
 import 'package:refrescate/data/cubit/cart_cubit.dart';
 import 'package:refrescate/model/CarritosItems.dart';
 import 'package:refrescate/model/Product.dart';
-import 'package:refrescate/model/cart.dart';
 import 'package:refrescate/ui/component/productInfo/ProductInfoPresenter.dart';
 
 class ProductInfoScreen extends StatefulWidget {
@@ -24,6 +23,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
   RemoteRepository remoteRepository;
   String productQuantity;
   Iterable<CarritosItems> carritoItem;
+  int selectCut = 0;
+  bool loading = false;
 
   @override
   void initState() {
@@ -36,9 +37,17 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery
+        .of(context)
+        .size
+        .height;
+    double width = MediaQuery
+        .of(context)
+        .size
+        .width;
     double sizeCut = 600.0;
+    int _value = 0;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.blue,
@@ -51,8 +60,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
             gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                stops: [0.8, 0.8],
-                colors: [Colors.blue, Colors.white]),
+                stops: [0.45, 0.2],
+                colors: [Colors.red, Colors.white]),
           ),
           child: ListView(
             children: [
@@ -103,7 +112,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                       children: [
                         SizedBox(
                           height:
-                              height < sizeCut ? height * 0.09 : height * 0.15,
+                          height < sizeCut ? height * 0.09 : height * 0.15,
                         ),
                         Padding(
                           padding: EdgeInsets.only(left: 20.0),
@@ -131,7 +140,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                         ),
                         SizedBox(
                           height:
-                              height < sizeCut ? height * 0.03 : height * 0.07,
+                          height < sizeCut ? height * 0.03 : height * 0.07,
                         ),
                         Padding(
                           padding: EdgeInsets.only(left: 20.0),
@@ -154,23 +163,15 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                MainAxisAlignment.spaceEvenly,
                                 children: [
                                   IconButton(
                                       icon: Icon(
                                         Icons.remove_circle,
-                                        color: Colors.blue,
+                                        color: Colors.red,
                                         size: 35.0,
                                       ),
-                                      onPressed: () => carritoItem.isEmpty
-                                          ? null
-                                          : carritoItem.first.cantidad - 1 == 0
-                                              ? presenter.deleteProductCart(
-                                                  carritoItem.first.id)
-                                              : presenter.updateProductCart(
-                                                  carritoItem.first.id,
-                                                  carritoItem.first.cantidad -
-                                                      1)),
+                                      onPressed: () => carritoItem.isNotEmpty && loading ==false ? onDelete( carritoItem.first.id) : null),
                                   Text(
                                     " - ",
                                     style: TextStyle(
@@ -182,47 +183,127 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                                   IconButton(
                                       icon: Icon(
                                         Icons.add_circle,
-                                        color: Colors.blue,
+                                        color: Colors.red,
                                         size: 35.0,
                                       ),
-                                      onPressed: () => carritoItem.isEmpty
-                                          ? presenter.addProductToCart(
-                                              widget.product.id)
-                                          : presenter.updateProductCart(
-                                              carritoItem.first.id,
-                                              carritoItem.first.cantidad + 1)),
+                                      onPressed: () =>loading == false ?  onAdd(): null),
                                 ],
                               ),
                               BlocBuilder<CartCubit, CartState>(
                                   builder: (context, state) {
-                                if (state is CartLoaded) {
-                                  print("Widget Id " + widget.product.id);
-                                  //Todo estaria bien hacerlo en otro sitio para capturar posible errores.
-                                  carritoItem = state.cart.carritosItems.where(
-                                      (element) => element.producto.id
-                                          .contains(widget.product.id));
+                                    if (state is CartLoaded) {
+                                      print("Widget Id " + widget.product.id);
+                                      //Todo estaria bien hacerlo en otro sitio para capturar posible errores.
+                                      carritoItem =
+                                          state.cart.carritosItems.where(
+                                                  (element) =>
+                                                  element.producto.id
+                                                      .contains(
+                                                      widget.product.id));
 
-                                  return Text(
-                                    carritoItem.isEmpty
-                                        ? "0 Unidades"
-                                        : carritoItem.first.cantidad
-                                                .toString() +
-                                            " Unidades",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                      fontSize: 16.0,
-                                    ),
-                                  );
-                                }
-                                return Container();
-                              })
+                                      return Text(
+                                        carritoItem.isEmpty
+                                            ? "0 Unidades"
+                                            :
+                                        carritoItem.first.producto.tipoUnidad ==
+                                            "Unidades"
+                                            ? carritoItem.first.cantidad
+                                            .toString() + " Unidades"
+                                            : carritoItem.first.peso
+                                            .toString() + " Gramos",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                          fontSize: 16.0,
+                                        ),
+                                      );
+                                    }
+                                    return Container();
+                                  })
                             ],
                           ),
                         ),
                         SizedBox(
-                          height:
-                              height < sizeCut ? height * 0.03 : height * 0.05,
+                          height: 10,
+                        ),
+                        widget.product.caracteristica == null
+                            ? Container()
+                            : Padding(
+
+                          padding: EdgeInsets.only(left: 20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Corte",
+                                style: TextStyle(fontWeight: FontWeight.bold),),
+                              SizedBox(height: 10,),
+                              Container(
+                                height: 40.0,
+                                alignment: Alignment.centerLeft,
+                                child: ListView.builder(
+                                    itemExtent: width / 4,
+                                    shrinkWrap: true,
+                                    primary: false,
+                                    itemCount: widget.product.caracteristica
+                                        .caracteristicas.length,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                            right: 8.0),
+                                        child: GestureDetector(
+                                          onTap: () =>
+                                          {
+
+                                            setState(() {
+                                              selectCut = index;
+                                              carritoItem.isEmpty
+                                                  ? null
+                                                  : presenter.updateProductCart(
+                                                  carritoItem.first.id,
+                                                  carritoItem.first.producto.tipoUnidad,
+                                                  carritoItem.first.cantidad,
+                                                  carritoItem.first.peso,
+                                                  cutId: widget.product
+                                                      .caracteristica
+                                                      .caracteristicas[selectCut]
+                                                      .id);
+                                            })
+                                          },
+                                          child: Container(
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                widget.product.caracteristica
+                                                    .caracteristicas[index]
+                                                    .nombre, style: TextStyle(
+                                                  color: Colors.white),
+                                                maxLines: 2,),
+                                            ),
+                                            height: 40.0,
+                                            width: 200.0,
+
+                                            decoration: BoxDecoration(
+                                              color: index == selectCut ? Colors
+                                                  .red : Color.fromRGBO(
+                                                  41, 41, 41, 1),
+                                              borderRadius: BorderRadius
+                                                  .circular(8),
+                                              shape: BoxShape.rectangle,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }),
+                              ),
+
+
+                            ],
+
+                          ),
+                        ),
+                        SizedBox(
+                          height: 40,
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -239,26 +320,40 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                               ),
                               BlocBuilder<CartCubit, CartState>(
                                   builder: (context, state) {
-                                if (state is CartLoaded) {
-                                  Iterable<CarritosItems> carritoItem = state
-                                      .cart.carritosItems
-                                      .where((element) => element.producto.id
-                                          .contains(widget.product.id));
-                                  double precio = carritoItem.isEmpty
-                                      ? 0
-                                      : carritoItem.first.cantidad *
-                                          carritoItem.first.producto.precio;
-                                  return Text(
-                                    precio.toString() + "€",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                      fontSize: 16.0,
-                                    ),
-                                  );
-                                }
-                                return Container();
-                              })
+                                    if (state is CartLoaded) {
+                                      Iterable<
+                                          CarritosItems> carritoItem = state
+                                          .cart.carritosItems
+                                          .where((element) =>
+                                          element.producto.id
+                                              .contains(widget.product.id));
+                                      double precio = 0;
+                                      loading = false;
+                                      if(carritoItem.isEmpty){}
+                                      else{
+                                      if(carritoItem.first.producto.tipoUnidad == "Unidades") {
+                                         precio = carritoItem.isEmpty
+                                            ? 0
+                                            : carritoItem.first.cantidad *
+                                            carritoItem.first.producto.precio;
+                                      }
+                                      else{
+                                         precio = carritoItem.isEmpty
+                                            ? 0
+                                            : double.parse(carritoItem.first.peso) *
+                                            carritoItem.first.producto.precio;
+                                      }}
+                                      return Text(
+                                        precio.toStringAsFixed(2) + "€",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                          fontSize: 16.0,
+                                        ),
+                                      );
+                                    }
+                                    return Container();
+                                  })
                             ],
                           ),
                         ),
@@ -307,7 +402,9 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                                 color: Colors.green,
                               ),
                             ),
+
                           ],
+
                         ),
                       ],
                     ),
@@ -335,7 +432,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                     top: 55,
                     left: 20.0,
                     child: Text(
-                      widget.product.precio.toString() +
+                      widget.product.precio.toStringAsFixed(2) +
                           "€ / " +
                           widget.product.cantidadLote.toString() +
                           " " +
@@ -374,4 +471,67 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
       productQuantity = initialQuantity;
     });
   }
+
+  onDelete(String cartItemId){
+      if(carritoItem.first.producto.tipoUnidad == "Unidades"){
+        if(carritoItem.first.cantidad -1 == 0){
+          loading = true;
+          presenter.deleteProductCart(cartItemId);
+        }else{
+          loading = true;
+
+          presenter.updateProductCart(
+              carritoItem.first.id,
+              carritoItem.first.producto.tipoUnidad,
+              carritoItem.first.cantidad -
+                  1,carritoItem.first.peso);
+        }
+      }else{
+        if(double.parse(carritoItem.first.peso) - 0.250 == 0){
+          loading = true;
+          presenter.deleteProductCart(cartItemId);
+        }else{
+          loading = true;
+          presenter.updateProductCart(cartItemId, carritoItem.first.producto.tipoUnidad, carritoItem.first.cantidad, (double.parse(carritoItem.first.peso) - 0.250).toString());
+        }
+      }
+    }
+    onAdd(){
+    if(carritoItem.isEmpty) {
+      loading = true;
+      presenter.addProductToCart(
+          widget.product.id,
+          widget.product.tipoUnidad,
+          cutId: widget.product
+              .caracteristica == null
+              ? null
+              : widget.product.caracteristica
+              .caracteristicas[selectCut].id);
+    }else{
+      loading = true;
+      if(carritoItem.first.producto.tipoUnidad=="Unidades"){
+        presenter.updateProductCart(
+            carritoItem.first.id,
+            carritoItem.first.producto.tipoUnidad,
+            carritoItem.first.cantidad+1,
+            carritoItem.first.peso==null ? null :(double.parse(carritoItem.first.peso)+0.250).toString(),
+            cutId: widget.product
+                .caracteristica == null
+                ? null
+                : widget.product.caracteristica
+                .caracteristicas[selectCut].id);
+      }else{
+      presenter.updateProductCart(
+              carritoItem.first.id,
+              carritoItem.first.producto.tipoUnidad,
+              carritoItem.first.cantidad,
+              carritoItem.first.peso==null ? null :(double.parse(carritoItem.first.peso)+0.250).toString(),
+              cutId: widget.product
+                  .caracteristica == null
+                  ? null
+                  : widget.product.caracteristica
+                  .caracteristicas[selectCut].id);
+        }
+      }
+    }
 }

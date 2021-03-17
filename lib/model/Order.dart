@@ -13,7 +13,7 @@ class Order {
   String _id;
   String _estado;
   String _fechaEntrega;
-  double _precioTotal;
+  String _precioTotal;
   String _createdAt;
   String _updatedAt;
   String _pedidoCarritoId;
@@ -24,7 +24,7 @@ class Order {
   String get id => _id;
   String get estado => _estado;
   String get fechaEntrega => _fechaEntrega;
-  double get precioTotal => _precioTotal;
+  String get precioTotal => _precioTotal;
   String get createdAt => _createdAt;
   String get updatedAt => _updatedAt;
   String get pedidoCarritoId => _pedidoCarritoId;
@@ -35,8 +35,8 @@ class Order {
   Order({
       String id, 
       String estado, 
-      String fechaEntrega, 
-      double precioTotal, 
+      String fechaEntrega,
+      String precioTotal,
       String createdAt, 
       String updatedAt, 
       String pedidoCarritoId, 
@@ -291,6 +291,7 @@ class Producto {
     _nombre = nombre;
     _color = color;
     _descripcion = descripcion;
+
     _precio = precio;
     _cantidadLote = cantidadLote;
     _descuento = descuento;
@@ -306,7 +307,13 @@ class Producto {
     _nombre = json["Nombre"];
     _color = json["Color"];
     _descripcion = json["Descripcion"];
-    _precio = json["Precio"];
+    if(json["Precio"] is int){
+      _precio = json["Precio"].toDouble();
+
+    }else{
+      _precio = json["Precio"];
+
+    }
     _cantidadLote = json["CantidadLote"];
     _descuento = json["Descuento"];
     _urlImagenes = json["UrlImagenes"] != null ? json["UrlImagenes"].cast<String>() : [];

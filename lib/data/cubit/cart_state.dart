@@ -23,6 +23,20 @@ class CartLoaded extends CartState {
   @override
   int get hashCode => cart.hashCode;
 }
+class CartLoading extends CartState {
+  final bool cartLoading;
+  const CartLoading(this.cartLoading);
+
+  @override
+  bool operator ==(Object o) {
+    if (identical(this, o)) return true;
+
+    return o is CartLoading && o.cartLoading == cartLoading;
+  }
+
+  @override
+  int get hashCode => cartLoading.hashCode;
+}
 
 class OrderCompleted extends CartState {
   final bool isOrderCompleted;

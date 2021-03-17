@@ -12,7 +12,7 @@ import 'package:refrescate/ui/component/bottomMenu/MenuPresenter.dart';
 import 'package:refrescate/ui/component/home/HomeScreen.dart';
 import 'package:refrescate/ui/component/order/OrderScreen.dart';
 import 'package:refrescate/ui/component/productCart/ProductCartScreen.dart';
-import 'package:refrescate/ui/component/register/mainRegisterView.dart';
+import 'package:refrescate/ui/component/userInfo/UserInfoScreen.dart';
 
 class Menu extends StatefulWidget {
   Menu();
@@ -24,7 +24,7 @@ class Menu extends StatefulWidget {
 class _MenuState extends State<Menu> implements MenuView {
   int selectedItem = 1;
   int aux;
-  List<Widget> screens = [OrderScreen(), HomeScreen(), MainRegisterView()];
+  List<Widget> screens = [OrderScreen(), HomeScreen(), UserInfoScreen()];
   MenuPresenter presenter;
   RemoteRepository remoteRepository;
   LocalRepository localRepository;
@@ -57,14 +57,7 @@ class _MenuState extends State<Menu> implements MenuView {
               leading: Container(
                 padding: EdgeInsets.only(left: 10.0),
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  "Refrescate",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: Image.asset("assets/letra-logo.png",height: 45,),
               ),
               title: Container(
                 alignment: Alignment.centerRight,

@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:refrescate/data/RemoteRepository.dart';
 import 'package:refrescate/model/Order.dart';
+import 'package:refrescate/model/PaymentData.dart';
 import 'package:refrescate/model/cart.dart';
 
 part 'cart_state.dart';
@@ -20,8 +21,12 @@ class CartCubit extends Cubit<CartState> {
     emit(CartLoaded(cart));
   }
 
-  Future<void> addItemCart(String userId, String productId) async {
-    await _remoteRepository.addItemCart(userId, cart.id, productId);
+  Future<void> addItemCart(String userId,String unit, String productId, {String cutId}) async {
+    if(unit == "Unidades"){
+      await _remoteRepository.addItemCart(userId, cart.id, productId, cutId:cutId);
+    }else{
+      await _remoteRepository.addItemCartWeight(userId, cart.id, productId, cutId:cutId);
+    }
     cart = await _remoteRepository.getActiveCart(userId);
 
     emit(CartLoaded(cart));
@@ -32,18 +37,24 @@ class CartCubit extends Cubit<CartState> {
     cart = await _remoteRepository.getActiveCart(userId);
     emit(CartLoaded(cart));
   }
-  Future<void> updateQuantity(String userId, String cartItemId, int quantity) async {
-    await _remoteRepository.updateCartItemQuantity(userId, cart.id, cartItemId, quantity);
+  Future<void> updateItemCart(String userId, String unit, String cartItemId,String weight, int quantity, {String cutId}) async {
+    if(unit == "Unidades" ){
+      await _remoteRepository.updateCartItemQuantity(userId, cart.id, cartItemId, quantity, cutId:cutId);
+
+    }else{
+      await _remoteRepository.updateCartItemWeight(userId, cart.id, cartItemId, weight);
+    }
     cart = await _remoteRepository.getActiveCart(userId);
     emit(CartLoaded(cart));
   }
-  Future<bool> createOrder(String userId, String fechaEntrega, double precioTotal) async{
+  Future<PaymentData> createOrder(String userId, String fechaEntrega, double precioTotal) async{
     String businessId = "5665eeb1-52d8-48d5-8aea-caa330af9723";
-    bool order = await _remoteRepository.createOrder(userId, fechaEntrega, businessId, precioTotal);
-    await _remoteRepository.createCart(userId);
-    cart = await _remoteRepository.getActiveCart(userId);
-    emit(CartLoaded(cart));
+    PaymentData paymentData = await _remoteRepository.createOrder(userId, fechaEntrega, businessId, precioTotal);
+
+    // await _remoteRepository.createCart(userId);
+    // cart = await _remoteRepository.getActiveCart(userId);
+    // emit(CartLoaded(cart));
     //Saltar a pantalla compra realizada con exito
-    return true;
+    return paymentData;
   }
 }

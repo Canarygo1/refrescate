@@ -8,8 +8,9 @@ class Category {
   String _nombre;
   dynamic _idpadre;
   String _categoriaNegocioId;
-
+  String _iconUrl;
   String get id => _id;
+  String get iconUrl => _iconUrl;
   String get nombre => _nombre;
   dynamic get idpadre => _idpadre;
   String get categoriaNegocioId => _categoriaNegocioId;
@@ -18,17 +19,20 @@ class Category {
       String id, 
       String nombre, 
       dynamic idpadre, 
-      String categoriaNegocioId}){
+      String categoriaNegocioId,
+  String iconUrl}){
     _id = id;
     _nombre = nombre;
     _idpadre = idpadre;
     _categoriaNegocioId = categoriaNegocioId;
-}
+    _iconUrl = iconUrl;
+  }
 
   Category.fromJson(dynamic json) {
     _id = json["Id"];
     _nombre = json["Nombre"];
     _idpadre = json["idpadre"];
+    _iconUrl = json["IconURL"];
     _categoriaNegocioId = json["CategoriaNegocioId"];
   }
 
@@ -38,6 +42,7 @@ class Category {
     map["Nombre"] = _nombre;
     map["idpadre"] = _idpadre;
     map["CategoriaNegocioId"] = _categoriaNegocioId;
+    map["IconURL"] = _iconUrl;
     return map;
   }
 

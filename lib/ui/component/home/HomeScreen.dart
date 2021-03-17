@@ -59,10 +59,11 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
                               allProducts, mainCategories[index].id)
                         },
                         child: Container(
+                          child: Image.network(mainCategories[index].iconUrl),
                           width: 65.0,
                           height: 65.0,
                           decoration: BoxDecoration(
-                            color: Colors.grey,
+                            color: Color.fromRGBO(41, 41, 41, 1),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -136,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
                                       color: Colors.grey,
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
-                                    height: 120.0,
+                                    height: 137.0,
                                     child: Image.asset("assets/trashIcon.png"),
                                   ),
                                   SizedBox(height: 10.0),

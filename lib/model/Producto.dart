@@ -11,8 +11,6 @@
 /// CaracteristicasProductoId : null
 /// CategoriaProductoId : "e2fd8288-ee50-47c1-a804-f1241c9f9aab"
 
-
-
 class Producto {
   String _id;
   String _nombre;
@@ -28,31 +26,42 @@ class Producto {
   String _categoriaProductoId;
 
   String get id => _id;
+
   String get nombre => _nombre;
+
   String get color => _color;
+
   String get descripcion => _descripcion;
+
   double get precio => _precio;
+
   int get cantidadLote => _cantidadLote;
+
   int get descuento => _descuento;
+
   List<String> get urlImagenes => _urlImagenes;
+
   String get tipoUnidad => _tipoUnidad;
+
   String get negocioProductoId => _negocioProductoId;
+
   dynamic get caracteristicasProductoId => _caracteristicasProductoId;
+
   String get categoriaProductoId => _categoriaProductoId;
 
-  Producto({
-    String id,
-    String nombre,
-    String color,
-    String descripcion,
-    double precio,
-    int cantidadLote,
-    int descuento,
-    List<String> urlImagenes,
-    String tipoUnidad,
-    String negocioProductoId,
-    dynamic caracteristicasProductoId,
-    String categoriaProductoId}){
+  Producto(
+      {String id,
+      String nombre,
+      String color,
+      String descripcion,
+      double precio,
+      int cantidadLote,
+      int descuento,
+      List<String> urlImagenes,
+      String tipoUnidad,
+      String negocioProductoId,
+      dynamic caracteristicasProductoId,
+      String categoriaProductoId}) {
     _id = id;
     _nombre = nombre;
     _color = color;
@@ -72,10 +81,15 @@ class Producto {
     _nombre = json["Nombre"];
     _color = json["Color"];
     _descripcion = json["Descripcion"];
-    _precio = json["Precio"];
+    if (json["Precio"] is int) {
+      _precio = json["Precio"].toDouble();
+    } else {
+      _precio = json["Precio"];
+    }
     _cantidadLote = json["CantidadLote"];
     _descuento = json["Descuento"];
-    _urlImagenes = json["UrlImagenes"] != null ? json["UrlImagenes"].cast<String>() : [];
+    _urlImagenes =
+        json["UrlImagenes"] != null ? json["UrlImagenes"].cast<String>() : [];
     _tipoUnidad = json["TipoUnidad"];
     _negocioProductoId = json["NegocioProductoId"];
     _caracteristicasProductoId = json["CaracteristicasProductoId"];
@@ -98,5 +112,4 @@ class Producto {
     map["CategoriaProductoId"] = _categoriaProductoId;
     return map;
   }
-
 }

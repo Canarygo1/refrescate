@@ -13,8 +13,9 @@ class CarritosItems {
   String _carritosItemId;
   String _carritosItemProductoId;
   Producto _producto;
-
+  String _peso;
   String get id => _id;
+  String get peso => _peso;
   int get cantidad => _cantidad;
   String get carritosItemId => _carritosItemId;
   String get carritosItemProductoId => _carritosItemProductoId;
@@ -25,7 +26,8 @@ class CarritosItems {
     int cantidad,
     String carritosItemId,
     String carritosItemProductoId,
-    Producto producto}){
+    Producto producto,
+    String peso}){
     _id = id;
     _cantidad = cantidad;
     _carritosItemId = carritosItemId;
@@ -39,6 +41,8 @@ class CarritosItems {
     _carritosItemId = json["CarritosItemId"];
     _carritosItemProductoId = json["CarritosItemProductoId"];
     _producto = json["Producto"] != null ? Producto.fromJson(json["Producto"]) : null;
+    _peso = json["Peso"] != null ? json["Peso"] : null;
+
   }
 
   Map<String, dynamic> toJson() {
@@ -49,6 +53,9 @@ class CarritosItems {
     map["CarritosItemProductoId"] = _carritosItemProductoId;
     if (_producto != null) {
       map["Producto"] = _producto.toJson();
+    }
+    if (_peso != null) {
+      map["Peso"] = _peso;
     }
     return map;
   }

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:refrescate/model/Order.dart';
+import 'package:refrescate/model/PaymentData.dart';
 import 'package:refrescate/model/Product.dart';
 import 'package:refrescate/model/cart.dart';
 import 'package:refrescate/model/category.dart';
@@ -37,17 +38,44 @@ class HttpRemoteRepository implements RemoteRepository {
 
   @override
   Future<bool> addItemCart(
-      String userId, String cartId, String productId) async {
+      String userId, String cartId, String productId, {String cutId}) async {
     // TODO: implement addItemCart
     var uri =
         Uri.parse(endpoint + "user/" + userId + "/cart/" + cartId + "/items");
-    var body = jsonEncode({'Cantidad': 1, 'CarritosItemProductoId': productId});
+    var body;
+
+    if( cutId != null){
+      body = jsonEncode({'Cantidad': 1, 'CarritosItemProductoId': productId, "CarritosCorteId":cutId});
+    }
+    else{
+       body = jsonEncode({'Cantidad': 1, 'CarritosItemProductoId': productId});
+    }
+
     var response = await _client.post(uri,
         headers: {"Content-Type": "application/json"}, body: body);
 
     return true;
   }
+  @override
+  Future<bool> addItemCartWeight(String userId, String cartId, String productId, {String cutId}) async {
 
+    var uri =
+    Uri.parse(endpoint + "user/" + userId + "/cart/" + cartId + "/items");
+    var body;
+
+    if( cutId != null){
+      body = jsonEncode({'Peso': 0.250, 'CarritosItemProductoId': productId, "CarritosCorteId":cutId});
+    }
+    else{
+      body = jsonEncode({'Peso': 0.250, 'CarritosItemProductoId': productId});
+    }
+
+    var response = await _client.post(uri,
+        headers: {"Content-Type": "application/json"}, body: body);
+
+    return true;
+
+  }
   @override
   Future<bool> deleteCartItem(
       String userId, String cartId, String cartItemId) async {
@@ -64,7 +92,7 @@ class HttpRemoteRepository implements RemoteRepository {
 
   @override
   Future<bool> updateCartItemQuantity(
-      String userId, String cartId, String cartItemId, int quantity) async {
+      String userId, String cartId, String cartItemId, int quantity, {String cutId}) async {
 //user/:userId/cart/:cartId/items/:itemId
     var uri = Uri.parse(endpoint +
         "user/" +
@@ -73,14 +101,47 @@ class HttpRemoteRepository implements RemoteRepository {
         cartId +
         "/items/" +
         cartItemId);
-    var body = jsonEncode({"Cantidad": quantity});
+    var body;
+    if( cutId != null){
+      body= jsonEncode({"Cantidad": quantity,"CarritosCorteId":cutId});
+    }
+    else{
+      body= jsonEncode({"Cantidad": quantity});
+
+    }
 
     var response = await _client.put(uri,
         headers: {"Content-Type": "application/json"}, body: body);
 
     return true;
   }
+  @override
+  Future<bool> updateCartItemWeight(
+      String userId, String cartId, String cartItemId, String weight, {String cutId}) async {
+//user/:userId/cart/:cartId/items/:itemId
+  weight  = (double.parse(weight)).toString();
 
+    var uri = Uri.parse(endpoint +
+        "user/" +
+        userId +
+        "/cart/" +
+        cartId +
+        "/items/" +
+        cartItemId);
+    var body;
+    if( cutId != null){
+      body= jsonEncode({"Peso": weight,"CarritosCorteId":cutId});
+    }
+    else{
+      body= jsonEncode({"Peso": weight});
+
+    }
+
+    var response = await _client.put(uri,
+        headers: {"Content-Type": "application/json"}, body: body);
+
+    return true;
+  }
   @override
   Future<List<Order>> getOrders(String userId) async {
     var uri = Uri.parse(endpoint + "user/" + userId + "/orders");
@@ -97,19 +158,19 @@ class HttpRemoteRepository implements RemoteRepository {
   }
 
   @override
-  Future<bool> createOrder(String userId, String fechaEntrega,
+  Future<PaymentData> createOrder(String userId, String fechaEntrega,
       String businessId, double precioTotal) async {
     var uri = Uri.parse(endpoint + "user/" + userId + "/orders");
     var body = jsonEncode({
       'PedidoNegocioId': businessId,
       'FechaEntrega': fechaEntrega,
-      'PrecioTotal': precioTotal
+      'PrecioTotal': double.parse(precioTotal.toStringAsFixed(2))
     });
     var response = await _client.post(uri,
         headers: {"Content-Type": "application/json"}, body: body);
-    print(response.body);
-
-    return true;
+    var data = json.decode(response.body)['result'];
+    PaymentData paymentData = PaymentData.fromJson(data["paymentData"]);
+    return paymentData;
   }
 
   @override
@@ -135,4 +196,6 @@ class HttpRemoteRepository implements RemoteRepository {
     }
     return categories;
   }
+
+
 }

@@ -13,7 +13,9 @@ class HomePresenter {
       String businessId = "5665eeb1-52d8-48d5-8aea-caa330af9723";
       List<Product> products = await _remoteRepository.getProducts(businessId);
       _view.setProducts(products);
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 
   getActiveCart() {
@@ -26,7 +28,7 @@ class HomePresenter {
     for (int i = 0; i < products.length; i++) {
         for(int e = 0; e<products[i].categoriaItems.length ; e++){
           if(products[i].categoriaItems[e].categoriasItemId == categoryId){
-            categoryProducts.add(products[i]);
+              categoryProducts.add(products[i]);
           }
         }
     }
@@ -37,7 +39,13 @@ class HomePresenter {
     String businessId = "5665eeb1-52d8-48d5-8aea-caa330af9723";
     List<Category> categories =
         await _remoteRepository.getCategories(businessId);
-    _view.setCategories(categories);
+    List<Category> removeSubCategories=[];
+    for(int i = 0; i<categories.length; i++){
+      if(categories[i].idpadre == null){
+        removeSubCategories.add(categories[i]);
+      }
+    }
+    _view.setCategories(removeSubCategories);
   }
 }
 

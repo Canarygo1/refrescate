@@ -4,7 +4,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:refrescate/data/cubit/cart_cubit.dart';
 import 'package:refrescate/model/CarritosItems.dart';
 import 'package:refrescate/model/MaskedTextInputFormatter.dart';
+import 'package:refrescate/model/PaymentData.dart';
 import 'package:refrescate/model/cart.dart';
+import 'package:refrescate/ui/component/Payment/PaymentScreen.dart';
 import 'package:refrescate/ui/component/productCart/ProductCartPresenter.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
@@ -196,335 +198,53 @@ class _ProductCartScreenState extends State<ProductCartScreen>
                           ),
                         ),
                         SizedBox(
-                          height: 15.0,
-                        ),
-                        false == true
-                            ? Text("Selecciona metodo de pago")
-                            : Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 10, right: 10),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                          icon:
-                                              Image.asset("assets/Tarjeta.png"),
-                                          iconSize: 90,
-                                          onPressed: () {},
-                                        ),
-                                        Text("Cambiar metodo de pago")
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding:  EdgeInsets.only(
-                                          left: 10, right: 10,bottom:MediaQuery.of(context).viewInsets.bottom),
-                                      child: Column(
-                                        children: [
-                                          TextFormField(
-                                            scrollPadding: EdgeInsets.only(bottom:bottomInsets + 40.0),
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: [
-                                              MaskedTextInputFormatter(
-                                                mask: 'xxxx-xxxx-xxxx-xxxx',
-                                                separator: '-',
-                                              ),
-                                            ],
-                                            autocorrect: true,
-                                            decoration: InputDecoration(
-                                              hintText: "Número de tarjeta",
-                                              labelText: "Número de tarjeta",
-                                              enabledBorder:
-                                                  UnderlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.grey,
-                                                    width: 1.5),
-                                              ),
-                                              labelStyle: TextStyle(
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                          TextFormField(
-                                            scrollPadding: EdgeInsets.only(bottom:bottomInsets + 40.0),
-                                            autocorrect: true,
-                                            decoration: InputDecoration(
-                                              hintText: "Titular de la tarjeta",
-                                              labelText:
-                                                  "Titular de la tarjeta",
-                                              enabledBorder:
-                                                  UnderlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.grey,
-                                                    width: 1.5),
-                                              ),
-                                              labelStyle: TextStyle(
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              Flexible(
-                                                child: TextFormField(
-                                                  scrollPadding: EdgeInsets.only(bottom:bottomInsets + 40.0),
-                                                  keyboardType: TextInputType.number,
-                                                  inputFormatters: [
-                                                    MaskedTextInputFormatter(
-                                                      mask: 'xx/xx',
-                                                      separator: '/',
-                                                    ),
-                                                  ],
-                                                  autocorrect: true,
-                                                  decoration: InputDecoration(
-                                                    hintText: "Caducidad",
-                                                    labelText:
-                                                    "Caducidad",
-                                                    enabledBorder:
-                                                    UnderlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          color: Colors.grey,
-                                                          width: 1.5),
-                                                    ),
-                                                    labelStyle: TextStyle(
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              Flexible(
-                                                child: TextFormField(
-
-                                                  autocorrect: true,
-                                                  decoration: InputDecoration(
-                                                    hintText: "CVC",
-                                                    labelText:
-                                                    "CVC",
-                                                    enabledBorder:
-                                                    UnderlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          color: Colors.grey,
-                                                          width: 1.5),
-                                                    ),
-                                                    labelStyle: TextStyle(
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          )
-
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                        SizedBox(
                           height: 30.0,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                false == true
-                                    ? IconButton(
-                                        icon: Image.asset("assets/Tarjeta.png"),
-                                        iconSize: 90,
-                                        onPressed: () {},
-                                      )
-                                    : Container(),
-                                ButtonTheme(
-                                  height: 50.0,
-                                  child: RaisedButton(
-                                    onPressed: () =>
-                                        {Navigator.of(context).pop()},
-                                    child: Text(
-                                      "Continuar Comprando",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12.0,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    color: Color.fromRGBO(247, 247, 247, 1),
+                            ButtonTheme(
+                              height: 50.0,
+                              child: RaisedButton(
+                                onPressed: () => {Navigator.of(context).pop()},
+                                child: Text(
+                                  "Continuar Comprando",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.0,
                                   ),
-                                )
-                              ],
+                                  textAlign: TextAlign.center,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                color: Color.fromRGBO(247, 247, 247, 1),
+                              ),
                             ),
-                            Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  false == true
-                                      ? IconButton(
-                                          icon: Image.asset("assets/bizum.png"),
-                                          iconSize: 98,
-                                          onPressed: () {},
-                                        )
-                                      : Container(),
-                                  ButtonTheme(
-                                    minWidth: 150,
-                                    height: 50.0,
-                                    child: RaisedButton(
-                                      onPressed: () => {
-                                        // presenter.createOrder(
-                                        //     totalPrice, _selectedDay),
-                                        showDialog(
-                                            barrierDismissible: false,
-                                            context: context,
-                                            builder: (context) {
-                                              return AlertDialog(
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius.circular(
-                                                                20.0))),
-                                                content: StatefulBuilder(
-                                                  // You need this, notice the parameters below:
-                                                  builder: (BuildContext
-                                                          context,
-                                                      StateSetter setState) {
-                                                    alertOrderSetState =
-                                                        setState;
-                                                    String mainText = orderStatus ==
-                                                            false
-                                                        ? "confirmando tu pedido"
-                                                        : "Pedido confirmado";
-                                                    String secondaryText =
-                                                        orderStatus == false
-                                                            ? "Tardamos 1 segundo, gracias."
-                                                            : "Muchas gracias";
-                                                    int count = 0;
-                                                    return Container(
-                                                      height: height * 0.390,
-                                                      child: Column(
-                                                        children: [
-                                                          Padding(
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                    bottom:
-                                                                        height *
-                                                                            0.060),
-                                                            child: orderStatus ==
-                                                                    false
-                                                                ? SpinKitCircle(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    size:
-                                                                        height *
-                                                                            0.10,
-                                                                  )
-                                                                : Icon(
-                                                                    Icons
-                                                                        .check_circle_outline,
-                                                                    size:
-                                                                        height *
-                                                                            0.10,
-                                                                    color: Colors
-                                                                        .green,
-                                                                  ),
-                                                          ),
-                                                          Column(
-                                                            children: [
-                                                              Text(
-                                                                mainText,
-                                                                style: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
-                                                              ),
-                                                              Text(
-                                                                secondaryText,
-                                                                style: TextStyle(
-                                                                    color: Color
-                                                                        .fromRGBO(
-                                                                            181,
-                                                                            180,
-                                                                            197,
-                                                                            1)),
-                                                              ),
-                                                              Padding(
-                                                                padding: EdgeInsets.only(
-                                                                    top: height *
-                                                                        0.040),
-                                                                child: Center(
-                                                                  child:
-                                                                      ButtonTheme(
-                                                                    height:
-                                                                        height *
-                                                                            0.055,
-                                                                    minWidth: double
-                                                                        .infinity,
-                                                                    child:
-                                                                        RaisedButton(
-                                                                      onPressed:
-                                                                          () =>
-                                                                              {
-                                                                        Navigator.of(context).popUntil((_) =>
-                                                                            count++ >=
-                                                                            2),
-                                                                      },
-                                                                      child:
-                                                                          Text(
-                                                                        "Volver al menu",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          fontSize:
-                                                                              12.0,
-                                                                        ),
-                                                                        textAlign:
-                                                                            TextAlign.center,
-                                                                      ),
-                                                                      shape:
-                                                                          RoundedRectangleBorder(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(7.0),
-                                                                      ),
-                                                                      color: Colors
-                                                                          .green,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            })
-                                      },
-                                      child: Text(
-                                        "Finalizar compra",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12.0,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      color: Colors.green,
-                                    ),
+                            ButtonTheme(
+                              minWidth: 150,
+                              height: 50.0,
+                              child: RaisedButton(
+                                onPressed: () => {
+                                  presenter.createOrder(
+                                      totalPrice, _selectedDay),
+                                },
+                                child: Text(
+                                  "Finalizar compra",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.0,
                                   ),
-                                ]),
+                                  textAlign: TextAlign.center,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                color: Colors.green,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -541,60 +261,72 @@ class _ProductCartScreenState extends State<ProductCartScreen>
 
   Align cartItemsList(
       double width, double height, CarritosItems carritosItems) {
-    double itemPrice = carritosItems.cantidad * carritosItems.producto.precio;
+    double itemPrice = carritosItems.cantidad == null ? double.parse(carritosItems.peso) * carritosItems.producto.precio
+        :carritosItems.cantidad * carritosItems.producto.precio;
     return Align(
       alignment: Alignment.topCenter,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Container(
-            width: (width) / 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(5.0),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(5.0),
+      child: Container(
+        child: Row(
+          children: [
+            Container(
+              width: (width) / 2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left:17.0),
+                    child: Container(
+                      padding: EdgeInsets.all(5.0),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      height: height * 0.07,
+                      width: width * 0.15,
+                      child: Image.asset("assets/trashIcon.png"),
+                    ),
                   ),
-                  height: height * 0.07,
-                  width: width * 0.15,
-                  child: Image.asset("assets/trashIcon.png"),
-                ),
-                Text(
-                  carritosItems.producto.nombre,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 12.0,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        carritosItems.producto.nombre,
+                        maxLines: 2,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12.0,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Container(
-            width: (width) / 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  "x" + carritosItems.cantidad.toString(),
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 12.0,
+            Container(
+              width: (width) / 2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    carritosItems.cantidad == null ? carritosItems.peso + " g":
+                    "x" + carritosItems.cantidad.toString() +" ud",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12.0,
+                    ),
                   ),
-                ),
-                Text(
-                  itemPrice.toString().replaceAll(".", ",") + "€",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 12.0,
+                  Text(
+                    itemPrice.toStringAsFixed(2).replaceAll(".", ",") + "€",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12.0,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -695,15 +427,16 @@ class _ProductCartScreenState extends State<ProductCartScreen>
   @override
   setFinalPrice(double finalPrice) {
     setState(() {
-      totalPrice = finalPrice.toString();
+      totalPrice = finalPrice.toStringAsFixed(2);
     });
   }
 
   @override
-  changeOrderStatus(bool orderStatus) {
-    print("Estado de la orden" + orderStatus.toString());
-    alertOrderSetState(() {
-      this.orderStatus = orderStatus;
-    });
+  changeOrderStatus(PaymentData paymentData) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PaymentScreen(paymentData: paymentData,),
+        ));
   }
 }

@@ -134,11 +134,11 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
                                     alignment: Alignment.center,
                                     padding: EdgeInsets.all(10.0),
                                     decoration: BoxDecoration(
-                                      color: Colors.grey,
+                                      color: Colors.white,
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
                                     height: 137.0,
-                                    child: Image.asset("assets/trashIcon.png"),
+                                    child: Image.network(product.urlImagenes[0]),
                                   ),
                                   SizedBox(height: 10.0),
                                   Text(

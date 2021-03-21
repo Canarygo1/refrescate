@@ -6,6 +6,7 @@ import 'package:refrescate/data/RemoteRepository.dart';
 import 'package:refrescate/data/cubit/cart_cubit.dart';
 import 'package:refrescate/model/CarritosItems.dart';
 import 'package:refrescate/model/Product.dart';
+import 'package:refrescate/ui/component/productCart/ProductCartScreen.dart';
 import 'package:refrescate/ui/component/productInfo/ProductInfoPresenter.dart';
 
 class ProductInfoScreen extends StatefulWidget {
@@ -366,7 +367,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                             ButtonTheme(
                               height: 50.0,
                               child: RaisedButton(
-                                onPressed: () => {},
+                                onPressed: () =>Navigator.of(context).pop(),
                                 child: Text(
                                   "Continuar Comprando",
                                   style: TextStyle(
@@ -386,7 +387,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                               minWidth: 150,
                               height: 50.0,
                               child: RaisedButton(
-                                onPressed: () => {},
+                                onPressed: () => goToCart(),
                                 child: Text(
                                   "Finalizar compra",
                                   style: TextStyle(
@@ -534,4 +535,10 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
         }
       }
     }
+  goToCart() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProductCartScreen()),
+    );
+  }
 }

@@ -1,16 +1,20 @@
 import 'dart:convert';
 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
 import 'package:refrescate/model/Order.dart';
 import 'package:refrescate/model/PaymentData.dart';
 import 'package:refrescate/model/Product.dart';
+import 'package:refrescate/model/Usuario.dart';
 import 'package:refrescate/model/cart.dart';
 import 'package:refrescate/model/category.dart';
+import 'package:refrescate/model/errors/CustomErrors.dart';
 import 'RemoteRepository.dart';
 
 class HttpRemoteRepository implements RemoteRepository {
   final Client _client;
   final String endpoint = "http://163.172.183.16:31469/";
+  final _storage = FlutterSecureStorage();
 
   HttpRemoteRepository(this._client);
 
@@ -37,18 +41,21 @@ class HttpRemoteRepository implements RemoteRepository {
   }
 
   @override
-  Future<bool> addItemCart(
-      String userId, String cartId, String productId, {String cutId}) async {
+  Future<bool> addItemCart(String userId, String cartId, String productId,
+      {String cutId}) async {
     // TODO: implement addItemCart
     var uri =
         Uri.parse(endpoint + "user/" + userId + "/cart/" + cartId + "/items");
     var body;
 
-    if( cutId != null){
-      body = jsonEncode({'Cantidad': 1, 'CarritosItemProductoId': productId, "CarritosCorteId":cutId});
-    }
-    else{
-       body = jsonEncode({'Cantidad': 1, 'CarritosItemProductoId': productId});
+    if (cutId != null) {
+      body = jsonEncode({
+        'Cantidad': 1,
+        'CarritosItemProductoId': productId,
+        "CarritosCorteId": cutId
+      });
+    } else {
+      body = jsonEncode({'Cantidad': 1, 'CarritosItemProductoId': productId});
     }
 
     var response = await _client.post(uri,
@@ -56,17 +63,21 @@ class HttpRemoteRepository implements RemoteRepository {
 
     return true;
   }
-  @override
-  Future<bool> addItemCartWeight(String userId, String cartId, String productId, {String cutId}) async {
 
+  @override
+  Future<bool> addItemCartWeight(String userId, String cartId, String productId,
+      {String cutId}) async {
     var uri =
-    Uri.parse(endpoint + "user/" + userId + "/cart/" + cartId + "/items");
+        Uri.parse(endpoint + "user/" + userId + "/cart/" + cartId + "/items");
     var body;
 
-    if( cutId != null){
-      body = jsonEncode({'Peso': 0.250, 'CarritosItemProductoId': productId, "CarritosCorteId":cutId});
-    }
-    else{
+    if (cutId != null) {
+      body = jsonEncode({
+        'Peso': 0.250,
+        'CarritosItemProductoId': productId,
+        "CarritosCorteId": cutId
+      });
+    } else {
       body = jsonEncode({'Peso': 0.250, 'CarritosItemProductoId': productId});
     }
 
@@ -74,8 +85,8 @@ class HttpRemoteRepository implements RemoteRepository {
         headers: {"Content-Type": "application/json"}, body: body);
 
     return true;
-
   }
+
   @override
   Future<bool> deleteCartItem(
       String userId, String cartId, String cartItemId) async {
@@ -92,7 +103,8 @@ class HttpRemoteRepository implements RemoteRepository {
 
   @override
   Future<bool> updateCartItemQuantity(
-      String userId, String cartId, String cartItemId, int quantity, {String cutId}) async {
+      String userId, String cartId, String cartItemId, int quantity,
+      {String cutId}) async {
 //user/:userId/cart/:cartId/items/:itemId
     var uri = Uri.parse(endpoint +
         "user/" +
@@ -102,12 +114,10 @@ class HttpRemoteRepository implements RemoteRepository {
         "/items/" +
         cartItemId);
     var body;
-    if( cutId != null){
-      body= jsonEncode({"Cantidad": quantity,"CarritosCorteId":cutId});
-    }
-    else{
-      body= jsonEncode({"Cantidad": quantity});
-
+    if (cutId != null) {
+      body = jsonEncode({"Cantidad": quantity, "CarritosCorteId": cutId});
+    } else {
+      body = jsonEncode({"Cantidad": quantity});
     }
 
     var response = await _client.put(uri,
@@ -115,11 +125,13 @@ class HttpRemoteRepository implements RemoteRepository {
 
     return true;
   }
+
   @override
   Future<bool> updateCartItemWeight(
-      String userId, String cartId, String cartItemId, String weight, {String cutId}) async {
+      String userId, String cartId, String cartItemId, String weight,
+      {String cutId}) async {
 //user/:userId/cart/:cartId/items/:itemId
-  weight  = (double.parse(weight)).toString();
+    weight = (double.parse(weight)).toString();
 
     var uri = Uri.parse(endpoint +
         "user/" +
@@ -129,12 +141,10 @@ class HttpRemoteRepository implements RemoteRepository {
         "/items/" +
         cartItemId);
     var body;
-    if( cutId != null){
-      body= jsonEncode({"Peso": weight,"CarritosCorteId":cutId});
-    }
-    else{
-      body= jsonEncode({"Peso": weight});
-
+    if (cutId != null) {
+      body = jsonEncode({"Peso": weight, "CarritosCorteId": cutId});
+    } else {
+      body = jsonEncode({"Peso": weight});
     }
 
     var response = await _client.put(uri,
@@ -142,6 +152,7 @@ class HttpRemoteRepository implements RemoteRepository {
 
     return true;
   }
+
   @override
   Future<List<Order>> getOrders(String userId) async {
     var uri = Uri.parse(endpoint + "user/" + userId + "/orders");
@@ -152,7 +163,7 @@ class HttpRemoteRepository implements RemoteRepository {
       Order order = Order.fromJson(data[i]);
       orders.add(order);
     }
-    print("Tamaño"+ orders.length.toString());
+    print("Tamaño" + orders.length.toString());
 
     return orders;
   }
@@ -197,5 +208,82 @@ class HttpRemoteRepository implements RemoteRepository {
     return categories;
   }
 
+  @override
+  Future<bool> login(String email, String password) async {
+    var uri = Uri.parse(endpoint + "login");
+    var body = jsonEncode({'Email': email, 'Password': password});
+    var response = await _client.post(uri,
+        headers: {"Content-Type": "application/json"}, body: body);
+    var data = json.decode(response.body);
+    if (data["code"] != 200) {
+      return false;
+    }
+    await storeToken(data["result"]["RefreshToken"], data["result"]["AccessToken"],
+        data["result"]["Id"]);
+    return true;
+  }
 
+  @override
+  Future<bool> deleteToken() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> storeToken(
+      String refreshToken, String accessToken, String userId) async {
+    await _storage.write(key: "accessToken", value: accessToken);
+    await _storage.write(key: "refreshToken", value: refreshToken);
+    await _storage.write(key: "userId", value: userId);
+    return true;
+  }
+
+  @override
+  Future<bool> updateAccessToken(String refreshToken) async {
+    var uriUpdate = Uri.parse(endpoint + "token");
+    var bodyToken = jsonEncode({'RefreshToken':refreshToken});
+    var responseToken = await _client.post(uriUpdate,
+        headers: {"Content-Type": "application/json"},body:bodyToken);
+    var dataToken = json.decode(responseToken.body);
+    var accessTokenUpdate  = dataToken["result"]["AccessToken"];
+
+    await updateAccessTokenStorage(accessTokenUpdate);
+    return true;
+  }
+
+  @override
+  Future<bool> updateAccessTokenStorage(String accessToken) async {
+    await _storage.write(key: "accessToken", value: accessToken);
+    return true;
+  }
+
+  Future<bool> logOut() async {
+    await _storage.deleteAll();
+    return true;
+  }
+
+  @override
+  Future<Usuario> getUser(String userId) async {
+    var uri = Uri.parse(endpoint + "user/"+userId);
+    Usuario user;
+    var accessToken  = await getUserAccessToken();
+    var response = await _client.get(uri,
+        headers: {"Content-Type": "application/json","token":accessToken});
+    var data = json.decode(response.body);
+
+    if(data['code'] == 401 && data['result'] == "jwt expired"){
+      throw JwtExpiredError("jwt expired");
+    }
+    else{
+      user = Usuario.fromJson(data["result"]["Usuario"][0]);
+      return user;
+    }
+    return user;
+  }
+
+  Future<String> getUserAccessToken() async {
+    return await _storage.read(key: "accessToken");
+  }
+  Future<String> getUserRefreshToken() async {
+    return await _storage.read(key: "refreshToken");
+  }
 }

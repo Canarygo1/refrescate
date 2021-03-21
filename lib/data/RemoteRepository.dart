@@ -1,6 +1,7 @@
 import 'package:refrescate/model/Order.dart';
 import 'package:refrescate/model/PaymentData.dart';
 import 'package:refrescate/model/Product.dart';
+import 'package:refrescate/model/Usuario.dart';
 import 'package:refrescate/model/cart.dart';
 import 'package:refrescate/model/category.dart';
 
@@ -17,4 +18,12 @@ abstract class RemoteRepository{
   Future<PaymentData> createOrder(String userId, String fechaEntrega,String businessId, double precioTotal);
   Future<bool> createCart(String userId);
   Future<List<Category>> getCategories(String businessId);
+  Future<Usuario> getUser(String userId);
+  Future<bool> login(String email, String password);
+  Future<bool> storeToken(String refreshToken, String accessToken, String userId);
+  Future<bool> deleteToken();
+  Future<bool> updateAccessToken(String refreshToken);
+  Future<bool> updateAccessTokenStorage(String accessToken);
+  Future<bool> logOut();
+  Future<String> getUserRefreshToken();
 }

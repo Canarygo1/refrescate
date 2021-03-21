@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:refrescate/data/RemoteRepository.dart';
 import 'package:refrescate/data/cubit/cart_cubit.dart';
-import 'package:refrescate/data/local/LocalRepository.dart';
+import 'package:refre\scate/data/local/LocalRepository.dart';
 import 'package:refrescate/model/cart.dart';
 import 'package:refrescate/ui/component/bottomMenu/Menu.dart';
 

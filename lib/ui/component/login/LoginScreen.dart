@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:refrescate/data/HttpRemoteRepository.dart';
+import 'package:refrescate/data/RemoteRepository.dart';
 import 'package:refrescate/globalMethods.dart';
+import 'package:refrescate/ui/component/bottomMenu/Menu.dart';
+import 'package:refrescate/ui/component/login/LoginPresenter.dart';
 import 'package:refrescate/ui/component/register/mainRegisterView.dart';
-class LoginView extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   @override
-  _LoginViewState createState() => _LoginViewState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _LoginScreenState extends State<LoginScreen> implements LoginView{
   TextEditingController email = new TextEditingController();
   TextEditingController password = new TextEditingController();
   Map emailWidget = {"icon": Icons.visibility_outlined, "obscure": true};
+  LoginPresenter _presenter ;
+  RemoteRepository _remoteRepository;
 
+  @override
+  void initState() {
+    _remoteRepository = HttpRemoteRepository(Client());
+    _presenter = LoginPresenter(_remoteRepository, this);
+
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -151,7 +165,7 @@ class _LoginViewState extends State<LoginView> {
               child: RaisedButton(
                 padding:
                     EdgeInsets.symmetric(horizontal: 90.0, vertical: 15.0),
-                onPressed: () => {},
+                onPressed: () => _presenter.onLogin(email.text, password.text),
                 child: Text(
                   "Iniciar sesión",
                   style: TextStyle(
@@ -196,5 +210,20 @@ class _LoginViewState extends State<LoginView> {
       emailWidget["obscure"] = !emailWidget["obscure"];
       emailWidget["icon"] = emailWidget["obscure"] ? Icons.visibility_outlined : Icons.visibility_off_outlined;
     });
+  }
+
+  @override
+  loginError() {
+    throw UnimplementedError();
+
+  }
+
+  @override
+  loginSuccessfully() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => Menu()),
+    );
   }
 }

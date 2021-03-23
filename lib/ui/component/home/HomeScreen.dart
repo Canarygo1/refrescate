@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
                                   Text(
                                     product
                                         .cantidadLote
-                                        .toString(),
+                                        .toString()+" "+product.tipoUnidad,
                                     style: TextStyle(
                                       fontSize: 14.0,
                                       color: Colors.black,
@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
                                   Text(
                                     product
                                         .precio
-                                        .toString(),
+                                        .toStringAsFixed(2)+" €",
                                     style: TextStyle(
                                       fontSize: 14.0,
                                       color: Colors.black,

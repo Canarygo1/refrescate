@@ -1,7 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:refrescate/model/CarritosItems.dart';
 import 'package:refrescate/model/Order.dart';
+import 'package:refrescate/ui/component/ProductList.dart';
 
 class OrderInfoView extends StatefulWidget {
   final Order order;
@@ -21,7 +23,7 @@ class _OrderInfoViewState extends State<OrderInfoView> {
     List<String> date = widget.order.fechaEntrega.split('-');
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.red,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
@@ -32,7 +34,7 @@ class _OrderInfoViewState extends State<OrderInfoView> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 stops: [0.8, 0.8],
-                colors: [Colors.blue, Colors.white]),
+                colors: [Colors.red, Colors.white]),
           ),
           child: ListView(
             children: [
@@ -124,80 +126,9 @@ class _OrderInfoViewState extends State<OrderInfoView> {
                                   widget.order.carritos.carritosItems.length,
                               scrollDirection: Axis.vertical,
                               itemBuilder: (context, index) {
-                                return Align(
-                                  alignment: Alignment.topCenter,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Container(
-                                        width: (width) / 2,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.all(5.0),
-                                              decoration: BoxDecoration(
-                                                color: Colors.blue,
-                                                borderRadius:
-                                                    BorderRadius.circular(5.0),
-                                              ),
-                                              height: height * 0.07,
-                                              width: width * 0.15,
-                                              child: Image.asset(
-                                                  "assets/trashIcon.png"),
-                                            ),
-                                            Text(
-                                              widget
-                                                  .order
-                                                  .carritos
-                                                  .carritosItems[index]
-                                                  .producto
-                                                  .nombre,
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 12.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        width: (width) / 2,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Text(
-                                              widget.order.carritos
-                                                  .carritosItems[index].cantidad
-                                                  .toString(),
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 12.0,
-                                              ),
-                                            ),
-                                            Text(
-                                              widget
-                                                      .order
-                                                      .carritos
-                                                      .carritosItems[index]
-                                                      .producto
-                                                      .precio
-                                                      .toString() +
-                                                  "€",
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 12.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
+                                CarritosItems carritosItem =
+                                widget.order.carritos.carritosItems[index];
+                                return ProductList(width, height, carritosItem);
                               }),
                         ),
                         SizedBox(
@@ -207,7 +138,7 @@ class _OrderInfoViewState extends State<OrderInfoView> {
                           thickness: 3,
                           endIndent: 10.0,
                           indent: 10.0,
-                          color: Colors.blue,
+                          color: Colors.red,
                         ),
                         SizedBox(
                           height:
@@ -241,11 +172,19 @@ class _OrderInfoViewState extends State<OrderInfoView> {
                     ),
                   ),
                   Positioned(
-                    top: height < sizeCut ? height * 0.05 : 0.0,
+                    top: height < sizeCut ? height * 0.06 : 0.0,
                     right: width * 0.08,
-                    child: Image.asset(
-                      "assets/trashIcon.png",
-                      scale: height < sizeCut ? 4.5 : 3.5,
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+
+                        child: Image.asset(
+                          "assets/shopping-basket.png",
+                          scale: height < sizeCut ? 4.5 : 3.5,
+                        ),
+                      ),
                     ),
                   ),
                   Positioned(

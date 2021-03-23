@@ -7,6 +7,7 @@ import 'package:refrescate/model/MaskedTextInputFormatter.dart';
 import 'package:refrescate/model/PaymentData.dart';
 import 'package:refrescate/model/cart.dart';
 import 'package:refrescate/ui/component/Payment/PaymentScreen.dart';
+import 'package:refrescate/ui/component/ProductList.dart';
 import 'package:refrescate/ui/component/productCart/ProductCartPresenter.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
@@ -153,7 +154,7 @@ class _ProductCartScreenState extends State<ProductCartScreen>
                                   itemBuilder: (context, indexTipo) {
                                     CarritosItems carritosItem =
                                         state.cart.carritosItems[indexTipo];
-                                    return cartItemsList(
+                                    return ProductList(
                                         width, height, carritosItem);
                                   });
                             }
@@ -259,77 +260,6 @@ class _ProductCartScreenState extends State<ProductCartScreen>
     );
   }
 
-  Align cartItemsList(
-      double width, double height, CarritosItems carritosItems) {
-    double itemPrice = carritosItems.cantidad == null ? double.parse(carritosItems.peso) * carritosItems.producto.precio
-        :carritosItems.cantidad * carritosItems.producto.precio;
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Container(
-        child: Row(
-          children: [
-            Container(
-              width: (width) / 2,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left:17.0),
-                    child: Container(
-                      padding: EdgeInsets.all(5.0),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      height: height * 0.07,
-                      width: width * 0.15,
-                      child: Image.asset("assets/trashIcon.png"),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        carritosItems.producto.nombre,
-                        maxLines: 2,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: (width) / 2,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    carritosItems.cantidad == null ? carritosItems.peso + " g":
-                    "x" + carritosItems.cantidad.toString() +" ud",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12.0,
-                    ),
-                  ),
-                  Text(
-                    itemPrice.toStringAsFixed(2).replaceAll(".", ",") + "€",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildTableCalendar() {
     return TableCalendar(

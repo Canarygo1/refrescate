@@ -1,15 +1,25 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pin_code_fields/flutter_pin_code_fields.dart';
 import 'package:refrescate/globalMethods.dart';
+import 'package:refrescate/model/UserRegister.dart';
 
 class FinalRegisterView extends StatefulWidget {
-  FinalRegisterView();
+  UserRegister userRegister;
+  FinalRegisterView(this.userRegister);
 
   @override
   _FinalRegisterViewState createState() => _FinalRegisterViewState();
 }
 
 class _FinalRegisterViewState extends State<FinalRegisterView> {
+  FirebaseAuth auth = FirebaseAuth.instance;
+  @override
+  void initState() {
+    sendSMS();
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -126,6 +136,38 @@ class _FinalRegisterViewState extends State<FinalRegisterView> {
           ],
         ),
       ),
+    );
+  }
+  sendSMS() async {
+    var test = await auth.verifyPhoneNumber(
+      phoneNumber:"+34" +widget.userRegister.phoneNumber,
+      verificationFailed: (FirebaseAuthException e) {
+        print(e);
+        if (e.code == 'invalid-phone-number') {
+          print('The provided phone number is not valid.');
+        }
+
+        // Handle other errors
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        // Auto-resolution timed out...
+      },
+      codeSent: (String verificationId, int resendToken) async {
+        // Update the UI - wait for the user to enter the SMS code
+        String smsCode = 'xxxx';
+
+        // Create a PhoneAuthCredential with the code
+        PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
+
+        // Sign the user in (or link) with the credential
+        await auth.signInWithCredential(phoneAuthCredential);
+      },
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        // ANDROID ONLY!
+
+        // Sign the user in (or link) with the auto-generated credential
+        await auth.signInWithCredential(credential);
+      },
     );
   }
 }

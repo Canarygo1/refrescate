@@ -1,3 +1,5 @@
+import 'package:refrescate/model/CarritosItems.dart';
+
 /// Id : "bba854a7-5372-4f85-a27a-332dbc47f5ad"
 /// Estado : "En preparacion"
 /// FechaEntrega : "2021-02-24"
@@ -168,71 +170,11 @@ class Carritos {
 /// CarritosItemProductoId : "5172c0f6-6f35-4483-81a8-6d601e9abb68"
 /// Producto : {"Id":"5172c0f6-6f35-4483-81a8-6d601e9abb68","Nombre":"Pollo para asar","Color":"Black","Descripcion":"Polllo ideal para asar, con un sabor y una textura unicos","Precio":3.2,"CantidadLote":1,"Descuento":0,"UrlImagenes":["1","2","3"],"TipoUnidad":"Unidades","NegocioProductoId":"5665eeb1-52d8-48d5-8aea-caa330af9723","CaracteristicasProductoId":null,"CategoriaProductoId":"e2fd8288-ee50-47c1-a804-f1241c9f9aab"}
 
-class CarritosItems {
-  String _id;
-  int _cantidad;
-  dynamic _pesoFinal;
-  dynamic _precioFinal;
-  bool _confirmado;
-  String _carritosItemId;
-  String _carritosItemProductoId;
-  Producto _producto;
 
-  String get id => _id;
-  int get cantidad => _cantidad;
-  dynamic get pesoFinal => _pesoFinal;
-  dynamic get precioFinal => _precioFinal;
-  bool get confirmado => _confirmado;
-  String get carritosItemId => _carritosItemId;
-  String get carritosItemProductoId => _carritosItemProductoId;
-  Producto get producto => _producto;
 
-  CarritosItems({
-      String id, 
-      int cantidad, 
-      dynamic pesoFinal, 
-      dynamic precioFinal, 
-      bool confirmado, 
-      String carritosItemId, 
-      String carritosItemProductoId, 
-      Producto producto}){
-    _id = id;
-    _cantidad = cantidad;
-    _pesoFinal = pesoFinal;
-    _precioFinal = precioFinal;
-    _confirmado = confirmado;
-    _carritosItemId = carritosItemId;
-    _carritosItemProductoId = carritosItemProductoId;
-    _producto = producto;
-}
 
-  CarritosItems.fromJson(dynamic json) {
-    _id = json["Id"];
-    _cantidad = json["Cantidad"];
-    _pesoFinal = json["PesoFinal"];
-    _precioFinal = json["PrecioFinal"];
-    _confirmado = json["Confirmado"];
-    _carritosItemId = json["CarritosItemId"];
-    _carritosItemProductoId = json["CarritosItemProductoId"];
-    _producto = json["Producto"] != null ? Producto.fromJson(json["Producto"]) : null;
-  }
 
-  Map<String, dynamic> toJson() {
-    var map = <String, dynamic>{};
-    map["Id"] = _id;
-    map["Cantidad"] = _cantidad;
-    map["PesoFinal"] = _pesoFinal;
-    map["PrecioFinal"] = _precioFinal;
-    map["Confirmado"] = _confirmado;
-    map["CarritosItemId"] = _carritosItemId;
-    map["CarritosItemProductoId"] = _carritosItemProductoId;
-    if (_producto != null) {
-      map["Producto"] = _producto.toJson();
-    }
-    return map;
-  }
 
-}
 
 /// Id : "5172c0f6-6f35-4483-81a8-6d601e9abb68"
 /// Nombre : "Pollo para asar"

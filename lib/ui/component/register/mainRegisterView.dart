@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:refrescate/globalMethods.dart';
+import 'package:refrescate/model/UserRegister.dart';
 import 'package:refrescate/ui/component/register/secondRegisterView.dart';
 
 class MainRegisterView extends StatefulWidget {
@@ -8,6 +9,7 @@ class MainRegisterView extends StatefulWidget {
 }
 
 class _MainRegisterViewState extends State<MainRegisterView> {
+  UserRegister _userRegister = UserRegister();
   TextEditingController email = new TextEditingController();
   TextEditingController name = new TextEditingController();
   TextEditingController surname = new TextEditingController();
@@ -169,7 +171,7 @@ class _MainRegisterViewState extends State<MainRegisterView> {
                   height: 50.0,
                   minWidth: width / 1.2,
                   child: RaisedButton(
-                    onPressed: () => GlobalMethods().pushPage(context, SecondRegisterView()),
+                    onPressed: () =>goNextScreen(),
                     child: Text(
                       "Continuar",
                       style: TextStyle(
@@ -233,5 +235,11 @@ class _MainRegisterViewState extends State<MainRegisterView> {
         return null;
       }
     }
+  }
+  goNextScreen(){
+    _userRegister.name = name.text;
+    _userRegister.email = email.text;
+    _userRegister.surname = surname.text;
+    GlobalMethods().pushPage(context, SecondRegisterView(_userRegister));
   }
 }

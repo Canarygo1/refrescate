@@ -158,38 +158,10 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                           height: 10,
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10.0),
+                          padding: EdgeInsets.symmetric(horizontal: 18.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  IconButton(
-                                      icon: Icon(
-                                        Icons.remove_circle,
-                                        color: Colors.red,
-                                        size: 35.0,
-                                      ),
-                                      onPressed: () => carritoItem.isNotEmpty && loading ==false ? onDelete( carritoItem.first.id) : null),
-                                  Text(
-                                    " - ",
-                                    style: TextStyle(
-                                      fontSize: 25.0,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  IconButton(
-                                      icon: Icon(
-                                        Icons.add_circle,
-                                        color: Colors.red,
-                                        size: 35.0,
-                                      ),
-                                      onPressed: () =>loading == false ?  onAdd(): null),
-                                ],
-                              ),
                               BlocBuilder<CartCubit, CartState>(
                                   builder: (context, state) {
                                     if (state is CartLoaded) {
@@ -204,7 +176,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
 
                                       return Text(
                                         carritoItem.isEmpty
-                                            ? "0 Unidades"
+                                            ?  widget.product.tipoUnidad == "Unidades"? "0 Unidades": "0 Gramos"
                                             :
                                         carritoItem.first.producto.tipoUnidad ==
                                             "Unidades"
@@ -220,7 +192,37 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                                       );
                                     }
                                     return Container();
-                                  })
+                                  }),
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  IconButton(
+                                      icon: Icon(
+                                        Icons.remove_circle,
+                                        color: Colors.red,
+                                        size: 45.0,
+                                      ),
+                                      onPressed: () => carritoItem.isNotEmpty && loading ==false ? onDelete( carritoItem.first.id) : null),
+                                  Text(
+                                    " - ",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+
+                                      fontSize: 45.0,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  IconButton(
+                                      icon: Icon(
+                                        Icons.add_circle,
+                                        color: Colors.red,
+                                        size: 45.0,
+                                      ),
+                                      onPressed: () =>loading == false ?  onAdd(): null),
+                                ],
+                              ),
                             ],
                           ),
                         ),
@@ -330,19 +332,23 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                                               .contains(widget.product.id));
                                       double precio = 0;
                                       loading = false;
+                                      double extra =0;
                                       if(carritoItem.isEmpty){}
                                       else{
+                                        if(carritoItem.first.cut != null){
+                                          extra = double.parse(carritoItem.first.cut.aumento);
+                                        }
                                       if(carritoItem.first.producto.tipoUnidad == "Unidades") {
                                          precio = carritoItem.isEmpty
                                             ? 0
-                                            : carritoItem.first.cantidad *
-                                            carritoItem.first.producto.precio;
+                                            : carritoItem.first.cantidad *(
+                                            carritoItem.first.producto.precio +extra);
                                       }
                                       else{
                                          precio = carritoItem.isEmpty
                                             ? 0
-                                            : double.parse(carritoItem.first.peso) *
-                                            carritoItem.first.producto.precio;
+                                            : double.parse(carritoItem.first.peso) * (
+                                            carritoItem.first.producto.precio + extra);
                                       }}
                                       return Text(
                                         precio.toStringAsFixed(2) + "€",
@@ -371,7 +377,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                                 child: Text(
                                   "Continuar Comprando",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: Colors.black,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 12.0,
                                   ),
@@ -380,7 +386,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ),
-                                color: Color.fromRGBO(56, 118, 200, 1),
+                                color: Color.fromRGBO(247, 247, 247, 1),
                               ),
                             ),
                             ButtonTheme(
@@ -413,9 +419,16 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                   Positioned(
                     top: height < sizeCut ? height * 0.05 : 0.0,
                     right: width * 0.08,
-                    child: Image.asset(
-                      "assets/trashIcon.png",
-                      scale: height < sizeCut ? 4.5 : 3.5,
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: Image.network(
+                        widget.product.urlImagenes[0],
+                          scale: height < sizeCut ? 1000 : 0.9,
+                        ),
+                      ),
                     ),
                   ),
                   Positioned(

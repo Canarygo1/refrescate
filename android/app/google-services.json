@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "969333112839",
+    "project_id": "discarten-fbcc3",
+    "storage_bucket": "discarten-fbcc3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:969333112839:android:9d60b43d1cc85f00946aa2",
+        "android_client_info": {
+          "package_name": "refrescate.refrescate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "969333112839-kg2f2be3f1l9v3s624kn3ve6qsspnqa8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARYiqG4uo7cZIatDixogsTFzDEMK6CRhU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "969333112839-kg2f2be3f1l9v3s624kn3ve6qsspnqa8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

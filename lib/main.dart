@@ -5,15 +5,19 @@ import 'package:http/http.dart';
 import 'package:refrescate/data/HttpRemoteRepository.dart';
 import 'package:refrescate/data/RemoteRepository.dart';
 import 'package:refrescate/ui/component/splash/splashScreen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'data/cubit/cart_cubit.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   final _storage = FlutterSecureStorage();
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   // This widget is the root of your application.
   @override

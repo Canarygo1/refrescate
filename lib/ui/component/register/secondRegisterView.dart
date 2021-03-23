@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:refrescate/globalMethods.dart';
+import 'package:refrescate/model/UserRegister.dart';
 import 'package:refrescate/ui/component/register/finalRegisterView.dart';
 
 class SecondRegisterView extends StatefulWidget {
+  UserRegister userRegister;
+
+  SecondRegisterView(this.userRegister);
+
   @override
   _SecondRegisterViewState createState() => _SecondRegisterViewState();
 }
@@ -12,6 +17,8 @@ class _SecondRegisterViewState extends State<SecondRegisterView> {
   TextEditingController phone = new TextEditingController();
   TextEditingController password = new TextEditingController();
   TextEditingController repeatPassword = new TextEditingController();
+
+
   final _formKey = GlobalKey<FormState>();
   Map passwordWidget = {"icon": Icons.visibility_outlined, "obscure": true};
   Map password2Widget = {"icon": Icons.visibility_outlined, "obscure": true};
@@ -199,7 +206,7 @@ class _SecondRegisterViewState extends State<SecondRegisterView> {
                   child: RaisedButton(
                     padding:
                         EdgeInsets.symmetric(horizontal: 90.0, vertical: 15.0),
-                    onPressed: () => GlobalMethods().pushPage(context, FinalRegisterView()),
+                    onPressed: () => goNextScreen(),
                     child: Text(
                       "Continuar",
                       style: TextStyle(
@@ -256,5 +263,11 @@ class _SecondRegisterViewState extends State<SecondRegisterView> {
         return null;
       }
     }
+  }
+  goNextScreen(){
+    widget.userRegister.address = address.text;
+    widget.userRegister.phoneNumber = phone.text;
+    widget.userRegister.password = password.text;
+    GlobalMethods().pushPage(context, FinalRegisterView(widget.userRegister));
   }
 }

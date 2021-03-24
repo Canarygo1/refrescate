@@ -140,7 +140,7 @@ class _FinalRegisterViewState extends State<FinalRegisterView> {
   }
   sendSMS() async {
     var test = await auth.verifyPhoneNumber(
-      phoneNumber:"+34" +widget.userRegister.phoneNumber,
+      phoneNumber:"+34 607 97 76 02",
       verificationFailed: (FirebaseAuthException e) {
         print(e);
         if (e.code == 'invalid-phone-number') {
@@ -154,7 +154,7 @@ class _FinalRegisterViewState extends State<FinalRegisterView> {
       },
       codeSent: (String verificationId, int resendToken) async {
         // Update the UI - wait for the user to enter the SMS code
-        String smsCode = 'xxxx';
+        String smsCode = '123456';
 
         // Create a PhoneAuthCredential with the code
         PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);

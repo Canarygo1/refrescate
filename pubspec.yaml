@@ -20,8 +20,8 @@ dependencies:
   http: 0.12.2
   flutter_webview_plugin: 0.3.11
   flutter_secure_storage: 3.3.5
-  firebase_core: 0.7.0
-  firebase_auth: ^0.20.1
+  firebase_core: 0.5.3
+  firebase_auth: 0.18.4
 
 dev_dependencies:
   flutter_test:

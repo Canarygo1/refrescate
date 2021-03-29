@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:refrescate/model/Order.dart';
 import 'package:refrescate/model/PaymentData.dart';
 import 'package:refrescate/model/Product.dart';
+import 'package:refrescate/model/UserRegister.dart';
 import 'package:refrescate/model/Usuario.dart';
 import 'package:refrescate/model/cart.dart';
 import 'package:refrescate/model/category.dart';
@@ -287,5 +288,42 @@ class HttpRemoteRepository implements RemoteRepository {
     return await _storage.read(key: "refreshToken");
   }
 
+  @override
+  Future<bool> userCreation(UserRegister userRegister) async {
+    print("TU PRIMOO");
+    String negocioId ='5665eeb1-52d8-48d5-8aea-caa330af9723';
+    var uriUpdate = Uri.parse(endpoint + "register");
+    var body = jsonEncode(
+        {'Email':userRegister.email,
+          'Password':userRegister.password,
+          'NegocioAuthUsuarioId':negocioId
+        });
 
+    var responseToken = await _client.post(uriUpdate,
+        headers: {"Content-Type": "application/json"},body:body);
+    var dataToken = json.decode(responseToken.body);
+    print(dataToken["result"]);
+    var authId  = dataToken["result"];
+    print(authId);
+    var uriUpdateUser = Uri.parse(endpoint + "user");
+    var bodyUser = jsonEncode(
+        { 'Id':authId,
+          'Email':userRegister.email,
+          'Nombre':userRegister.name,
+          'Apellidos':userRegister.surname,
+          'Telefono':userRegister.phoneNumber,
+          'Direccion':userRegister.address,
+          'CodigoPostal':'38530',
+          'NegocioUsuarioId':negocioId
+        });
+    var responseUser = await _client.post(uriUpdateUser,
+        headers: {"Content-Type": "application/json"},body:bodyUser);
+    var dataUser = json.decode(responseUser.body);
+    print(dataUser);
+    if(dataUser['code'] == 200 ){
+      return true;
+  }else{
+      return false;
+    }
+  }
 }

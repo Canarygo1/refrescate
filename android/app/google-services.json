@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "257773862344",
-    "project_id": "discarten2",
-    "storage_bucket": "discarten2.appspot.com"
+    "project_number": "969333112839",
+    "project_id": "discarten-fbcc3",
+    "storage_bucket": "discarten-fbcc3.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:257773862344:android:972441c2741532829794fd",
+        "mobilesdk_app_id": "1:969333112839:android:9d60b43d1cc85f00946aa2",
         "android_client_info": {
           "package_name": "refrescate.refrescate"
         }
       },
       "oauth_client": [
         {
-          "client_id": "257773862344-glt5g8jk360hh38tl60ivcs8rugcqem4.apps.googleusercontent.com",
+          "client_id": "969333112839-kg2f2be3f1l9v3s624kn3ve6qsspnqa8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD4oU09cb8ThoXMZLrhNTzEZ6jJLR73L8c"
+          "current_key": "AIzaSyARYiqG4uo7cZIatDixogsTFzDEMK6CRhU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "257773862344-glt5g8jk360hh38tl60ivcs8rugcqem4.apps.googleusercontent.com",
+              "client_id": "969333112839-kg2f2be3f1l9v3s624kn3ve6qsspnqa8.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -1,25 +1,40 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pin_code_fields/flutter_pin_code_fields.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:http/http.dart';
+import 'package:refrescate/data/HttpRemoteRepository.dart';
+import 'package:refrescate/data/RemoteRepository.dart';
 import 'package:refrescate/globalMethods.dart';
 import 'package:refrescate/model/UserRegister.dart';
+import 'package:refrescate/ui/component/login/LoginScreen.dart';
+import 'package:refrescate/ui/component/register/finalRegisterPresenter.dart';
 
-class FinalRegisterView extends StatefulWidget {
-  UserRegister userRegister;
-  FinalRegisterView(this.userRegister);
+class FinalRegisterScreen extends StatefulWidget {
+  final UserRegister userRegister;
+
+  FinalRegisterScreen(this.userRegister);
 
   @override
-  _FinalRegisterViewState createState() => _FinalRegisterViewState();
+  _FinalRegisterScreenState createState() => _FinalRegisterScreenState();
 }
 
-class _FinalRegisterViewState extends State<FinalRegisterView> {
+class _FinalRegisterScreenState extends State<FinalRegisterScreen> implements FinalRegisterView{
+  RemoteRepository _remoteRepository = HttpRemoteRepository(Client());
+  FinalRegisterPresenter _finalRegisterPresenter ;
+
   FirebaseAuth auth = FirebaseAuth.instance;
+  String codeStatusResponse = "";
+  String verificationId;
+  bool userCreationAllowed = false;
+  bool creationError = false;
   @override
   void initState() {
     sendSMS();
-    // TODO: implement initState
+    _finalRegisterPresenter = FinalRegisterPresenter(_remoteRepository, this);
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -94,22 +109,25 @@ class _FinalRegisterViewState extends State<FinalRegisterView> {
               height: 35.0,
             ),
             Container(
-              child: PinCodeFields(
-                length: 4,
-                margin: EdgeInsets.symmetric(horizontal: width * 0.1),
+              child: userCreationAllowed != true ? PinCodeFields(
+                length: 6,
                 keyboardType: TextInputType.number,
-                borderWidth: 5.0,
+                borderWidth: 2.0,
                 borderColor: Colors.black,
                 animationDuration: Duration(milliseconds: 200),
                 onComplete: (output) {
-                  print(output);
+                  verifyCode(output);
                 },
-              ),
+              ): SpinKitCircle(color: Colors.blue)
             ),
             SizedBox(
-              height: height * 0.1,
+              height: height * 0.025,
             ),
-            Container(
+            Center(child: Text(codeStatusResponse)),
+            SizedBox(
+              height: height * 0.05,
+            ),
+           creationError ==true ? Container(
               width: width,
               alignment: Alignment.center,
               child: ButtonTheme(
@@ -132,15 +150,16 @@ class _FinalRegisterViewState extends State<FinalRegisterView> {
                   color: Color.fromRGBO(56, 118, 200, 1),
                 ),
               ),
-            ),
+            ):Container(),
           ],
         ),
       ),
     );
   }
+
   sendSMS() async {
     var test = await auth.verifyPhoneNumber(
-      phoneNumber:"+34 607 97 76 02",
+      phoneNumber: "+34 607 97 76 02",
       verificationFailed: (FirebaseAuthException e) {
         print(e);
         if (e.code == 'invalid-phone-number') {
@@ -154,13 +173,15 @@ class _FinalRegisterViewState extends State<FinalRegisterView> {
       },
       codeSent: (String verificationId, int resendToken) async {
         // Update the UI - wait for the user to enter the SMS code
-        String smsCode = '123456';
-
-        // Create a PhoneAuthCredential with the code
-        PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
-
-        // Sign the user in (or link) with the credential
-        await auth.signInWithCredential(phoneAuthCredential);
+        try {
+          this.verificationId = verificationId;
+        } catch (e) {
+          setState(() {
+            codeStatusResponse = "Error en la verificacion de " +
+                widget.userRegister.phoneNumber;
+          });
+          print(e);
+        }
       },
       verificationCompleted: (PhoneAuthCredential credential) async {
         // ANDROID ONLY!
@@ -169,5 +190,45 @@ class _FinalRegisterViewState extends State<FinalRegisterView> {
         await auth.signInWithCredential(credential);
       },
     );
+  }
+
+  verifyCode(String code) async {
+    try {
+      String smsCode = code;
+      // Create a PhoneAuthCredential with the code
+      PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(
+          verificationId: verificationId, smsCode: smsCode);
+
+      // Sign the user in (or link) with the credential
+      await auth.signInWithCredential(phoneAuthCredential);
+
+      setState(() {
+        codeStatusResponse = "Creando Usuario";
+        userCreationAllowed = true;
+      });
+      await _finalRegisterPresenter.userCreation(widget.userRegister);
+
+    } catch (e) {
+      setState(() {
+        codeStatusResponse =
+            "Error en la verificación de " + widget.userRegister.phoneNumber;
+      });
+
+      print(e);
+    }
+  }
+
+  @override
+  userCreated() {
+    GlobalMethods().removePagesAndGoToNewScreen(context, LoginScreen());
+  }
+
+  @override
+  userCreationError() {
+    setState(() {
+      codeStatusResponse =
+          "Error en la creación del Usuario, pulse continuar para volver a intentarlo";
+
+    });
   }
 }

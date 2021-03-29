@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:refrescate/globalMethods.dart';
 import 'package:refrescate/model/UserRegister.dart';
-import 'package:refrescate/ui/component/register/finalRegisterView.dart';
+import 'package:refrescate/ui/component/register/finalRegisterScreen.dart';
 
 class SecondRegisterView extends StatefulWidget {
   UserRegister userRegister;
@@ -268,6 +268,6 @@ class _SecondRegisterViewState extends State<SecondRegisterView> {
     widget.userRegister.address = address.text;
     widget.userRegister.phoneNumber = phone.text;
     widget.userRegister.password = password.text;
-    GlobalMethods().pushPage(context, FinalRegisterView(widget.userRegister));
+    GlobalMethods().pushPage(context, FinalRegisterScreen(widget.userRegister));
   }
 }

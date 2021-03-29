@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:refrescate/data/RemoteRepository.dart';
 import 'package:refrescate/data/cubit/cart_cubit.dart';
 import 'package:refre\scate/data/local/LocalRepository.dart';
@@ -11,9 +12,10 @@ class MenuPresenter{
   // LocalRepository _localRepository;
   CartCubit _cartCubit;
   MenuPresenter(this._view, this._cartCubit);
+  final _storage = FlutterSecureStorage();
 
   getActiveCart() async {
-    String userId = "4ad8d937-52a4-4f43-a435-bfad4a879e5a";
+    String userId = await _storage.read(key: "userId");
     print(userId);
     _cartCubit.getCart(userId);
 

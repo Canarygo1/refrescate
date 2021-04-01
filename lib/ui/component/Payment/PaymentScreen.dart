@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:refrescate/data/cubit/cart_cubit.dart';
 import 'package:refrescate/model/PaymentData.dart';
@@ -17,7 +18,9 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
     @override
     CartCubit cartCubit;
-  void initState() {
+    final _storage = FlutterSecureStorage();
+
+    void initState() {
        cartCubit = context.read<CartCubit>();
 
       // TODO: implement initState
@@ -38,8 +41,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
       ),
     );
   }
-  Future<bool> _onBackPressed() {
-    cartCubit.getCart("4ad8d937-52a4-4f43-a435-bfad4a879e5a");
+  Future<bool> _onBackPressed() async {
+    String userId = await _storage.read(key: "userId");
+
+    cartCubit.getCart(userId);
     Navigator.of(context).pop(true);
   }
     String _loadHTML() {

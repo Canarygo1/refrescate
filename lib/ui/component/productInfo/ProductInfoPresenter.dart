@@ -11,22 +11,27 @@ class ProductInfoPresenter {
 
   ProductInfoPresenter(this._view, this._remoteRepository, this._cartCubit);
 
-  addProductToCart(String productId, String unit, {String cutId}) async {
+  addProductToCart(String productId, String unit, String observations, {String cutId}) async {
     String userId = await _storage.read(key: "userId");
-
-    _cartCubit.addItemCart(userId, unit, productId, cutId: cutId);
+    print(observations);
+    _cartCubit.addItemCart(userId, unit, productId, observations,cutId: cutId);
   }
 
-  updateProductCart(String cartItemId, String unit, int quantity, String weight,
-      {String cutId}) {
-    String userId = "4ad8d937-52a4-4f43-a435-bfad4a879e5a";
+  updateProductObservations(String cartItemId, String observations) async {
+    String userId = await _storage.read(key: "userId");
+    _cartCubit.updateItemCartObservations(userId, cartItemId, observations);
+  }
 
-    _cartCubit.updateItemCart(userId, unit ,cartItemId, weight, quantity,
+  updateProductCart(String cartItemId, String unit, int quantity, String weight,String observations,
+      {String cutId}) async {
+    String userId = await _storage.read(key: "userId");
+
+    _cartCubit.updateItemCart(userId, unit ,cartItemId, weight, quantity,observations,
         cutId: cutId);
   }
 
-  deleteProductCart(String cartItemId) {
-    String userId = "4ad8d937-52a4-4f43-a435-bfad4a879e5a";
+  deleteProductCart(String cartItemId) async {
+    String userId = await _storage.read(key: "userId");
     _cartCubit.deleteItemCart(userId, cartItemId);
   }
 

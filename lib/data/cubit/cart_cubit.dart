@@ -22,11 +22,11 @@ class CartCubit extends Cubit<CartState> {
     emit(CartLoaded(cart));
   }
 
-  Future<void> addItemCart(String userId,String unit, String productId, {String cutId}) async {
+  Future<void> addItemCart(String userId,String unit, String productId, String observations,{String cutId}) async {
     if(unit == "Unidades"){
-      await _remoteRepository.addItemCart(userId, cart.id, productId, cutId:cutId);
+      await _remoteRepository.addItemCart(userId, cart.id, productId, observations,cutId:cutId);
     }else{
-      await _remoteRepository.addItemCartWeight(userId, cart.id, productId, cutId:cutId);
+      await _remoteRepository.addItemCartWeight(userId, cart.id, productId, observations, cutId:cutId);
     }
     cart = await _remoteRepository.getActiveCart(userId);
 
@@ -38,13 +38,18 @@ class CartCubit extends Cubit<CartState> {
     cart = await _remoteRepository.getActiveCart(userId);
     emit(CartLoaded(cart));
   }
-  Future<void> updateItemCart(String userId, String unit, String cartItemId,String weight, int quantity, {String cutId}) async {
+  Future<void> updateItemCart(String userId, String unit, String cartItemId,String weight, int quantity,String observations, {String cutId}) async {
     if(unit == "Unidades" ){
-      await _remoteRepository.updateCartItemQuantity(userId, cart.id, cartItemId, quantity, cutId:cutId);
+      await _remoteRepository.updateCartItemQuantity(userId, cart.id, cartItemId, quantity, observations, cutId:cutId);
 
     }else{
       await _remoteRepository.updateCartItemWeight(userId, cart.id, cartItemId, weight);
     }
+    cart = await _remoteRepository.getActiveCart(userId);
+    emit(CartLoaded(cart));
+  }
+  Future<void> updateItemCartObservations(String userId, String cartItemId,String observations) async {
+    await _remoteRepository.updateCartItemObservations(userId, cart.id, cartItemId,observations);
     cart = await _remoteRepository.getActiveCart(userId);
     emit(CartLoaded(cart));
   }

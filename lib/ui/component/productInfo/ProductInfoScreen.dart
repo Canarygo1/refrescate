@@ -24,8 +24,11 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
   RemoteRepository remoteRepository;
   String productQuantity;
   Iterable<CarritosItems> carritoItem;
+  var observationsController = TextEditingController();
+
   int selectCut = 0;
   bool loading = false;
+  FocusNode _focus = new FocusNode();
 
   @override
   void initState() {
@@ -33,8 +36,10 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
 
     remoteRepository = HttpRemoteRepository(Client());
     presenter = ProductInfoPresenter(this, remoteRepository, cartCubit);
+
     super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +53,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
         .width;
     double sizeCut = 600.0;
     int _value = 0;
+    double bottomInsets = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -214,13 +220,14 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  IconButton(
-                                      icon: Icon(
-                                        Icons.add_circle,
-                                        color: Colors.red,
-                                        size: 45.0,
-                                      ),
-                                      onPressed: () =>loading == false ?  onAdd(): null),
+
+                                 IconButton(
+                                        icon: Icon(
+                                          Icons.add_circle,
+                                          color: Colors.red,
+                                          size: 45.0,
+                                        ),
+                                        onPressed: () =>loading == false ?  onAdd(): null),
                                 ],
                               ),
                             ],
@@ -267,6 +274,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                                                   carritoItem.first.producto.tipoUnidad,
                                                   carritoItem.first.cantidad,
                                                   carritoItem.first.peso,
+                                                  observationsController.text,
                                                   cutId: widget.product
                                                       .caracteristica
                                                       .caracteristicas[selectCut]
@@ -305,8 +313,39 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
 
                           ),
                         ),
+                        Padding(
+
+                          padding: EdgeInsets.only(left: 20.0, right: 20, bottom: bottomInsets /2),
+                          child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Observaciones',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14.0,
+                                ),
+                              ),
+                              Focus(
+                                onFocusChange:(hasFocus) => {hasFocus ? null : carritoItem.isEmpty ? null : presenter.updateProductObservations(carritoItem.first.id, observationsController.text)} ,
+                                child: TextField(
+                                  controller: observationsController,
+                                  scrollPadding: EdgeInsets.only(bottom:bottomInsets + 50),
+                                  decoration: new InputDecoration(
+                                    border: new OutlineInputBorder(
+                                        borderSide: new BorderSide(color: Colors.teal)
+                                    ),),
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: 2,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
                         SizedBox(
-                          height: 40,
+                          height: 20,
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -332,7 +371,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                                               .contains(widget.product.id));
                                       double precio = 0;
                                       loading = false;
-                                      double extra =0;
+                                      double extra = 0;
                                       if(carritoItem.isEmpty){}
                                       else{
                                         if(carritoItem.first.cut != null){
@@ -364,6 +403,10 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                             ],
                           ),
                         ),
+                        SizedBox(
+                          height: 20,
+                        ),
+
                         SizedBox(
                           height: 20,
                         ),
@@ -498,7 +541,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
               carritoItem.first.id,
               carritoItem.first.producto.tipoUnidad,
               carritoItem.first.cantidad -
-                  1,carritoItem.first.peso);
+                  1,carritoItem.first.peso,observationsController.text);
         }
       }else{
         if(double.parse(carritoItem.first.peso) - 0.250 == 0){
@@ -506,7 +549,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
           presenter.deleteProductCart(cartItemId);
         }else{
           loading = true;
-          presenter.updateProductCart(cartItemId, carritoItem.first.producto.tipoUnidad, carritoItem.first.cantidad, (double.parse(carritoItem.first.peso) - 0.250).toString());
+          presenter.updateProductCart(cartItemId, carritoItem.first.producto.tipoUnidad, carritoItem.first.cantidad, (double.parse(carritoItem.first.peso) - 0.250).toString(),observationsController.text);
         }
       }
     }
@@ -516,6 +559,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
       presenter.addProductToCart(
           widget.product.id,
           widget.product.tipoUnidad,
+          observationsController.text,
           cutId: widget.product
               .caracteristica == null
               ? null
@@ -529,6 +573,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
             carritoItem.first.producto.tipoUnidad,
             carritoItem.first.cantidad+1,
             carritoItem.first.peso==null ? null :(double.parse(carritoItem.first.peso)+0.250).toString(),
+            observationsController.text,
             cutId: widget.product
                 .caracteristica == null
                 ? null
@@ -540,7 +585,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
               carritoItem.first.producto.tipoUnidad,
               carritoItem.first.cantidad,
               carritoItem.first.peso==null ? null :(double.parse(carritoItem.first.peso)+0.250).toString(),
-              cutId: widget.product
+            observationsController.text,
+          cutId: widget.product
                   .caracteristica == null
                   ? null
                   : widget.product.caracteristica

@@ -1,12 +1,13 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:refrescate/data/cubit/cart_cubit.dart';
 import 'package:refrescate/model/PaymentData.dart';
 import 'package:refrescate/model/cart.dart';
-import 'dart:io';
 
 class ProductCartPresenter {
   ProductCartView _view;
   CartCubit _cartCubit;
   ProductCartPresenter(this._view, this._cartCubit);
+  final _storage = FlutterSecureStorage();
 
   calculateFinalPrice(Cart cart)  {
 
@@ -32,7 +33,7 @@ class ProductCartPresenter {
   }
 
   createOrder(String precioTotal, DateTime fechaEntrega) async {
-    String userId = "4ad8d937-52a4-4f43-a435-bfad4a879e5a";
+    String userId = await _storage.read(key: "userId");
     String fechaEntregaParse = fechaEntrega.toString().split(" ")[0];
     PaymentData paymentData = await _cartCubit.createOrder(userId, fechaEntregaParse, double.parse(
         precioTotal));

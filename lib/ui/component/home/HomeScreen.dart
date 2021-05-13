@@ -44,44 +44,51 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
           Container(
             height: 120.0,
             alignment: Alignment.center,
-            child: ListView.builder(
-                itemExtent: width / 4,
-                shrinkWrap: true,
-                primary: false,
-                itemCount: mainCategories.length,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () => {
-                          presenter.categoryFilter(
-                              allProducts, mainCategories[index].id)
-                        },
-                        child: Container(
-                          child: Image.network(mainCategories[index].iconUrl),
-                          width: 65.0,
-                          height: 65.0,
-                          decoration: BoxDecoration(
-                            color: Color.fromRGBO(41, 41, 41, 1),
-                            shape: BoxShape.circle,
+            child: Scrollbar(
+              isAlwaysShown: true,
+
+              child: ListView.builder(
+                  itemExtent: width / 4,
+                  shrinkWrap: true,
+                  primary: false,
+                  itemCount: mainCategories.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () => {
+                            presenter.categoryFilter(
+                                allProducts, mainCategories[index].id)
+                          },
+                          child: Container(
+                            child: Image.network(mainCategories[index].iconUrl),
+                            width: 65.0,
+                            height: 65.0,
+                            decoration: BoxDecoration(
+                              color: categoryFilterId == mainCategories[index].id ? Color.fromRGBO(41, 41, 41, 1):Colors.black12,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Text(
-                        mainCategories[index].nombre,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14.0,
+                        SizedBox(
+                          height: 10.0,
                         ),
-                      ),
-                    ],
-                  );
-                }),
+                        Text(
+                          mainCategories[index].nombre,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.0,
+                          ),
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    );
+                  }),
+            ),
           ),
           SizedBox(
             height: 10.0,
@@ -89,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
           Container(
             padding: EdgeInsets.only(left: 20.0),
             child: Text(
-              "Todos",
+              mainCategories[mainCategories.indexWhere((element) =>categoryFilterId == element.id)].nombre,
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 16.0,

@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> implements LoginView{
               padding: EdgeInsets.only(right: 20.0),
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () => {},
+                onPressed: () => GlobalMethods().pushPage(context, Menu()),
                 child: Text(
                   "Saltar",
                   style: TextStyle(

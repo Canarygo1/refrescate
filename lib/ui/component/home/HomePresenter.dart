@@ -45,6 +45,14 @@ class HomePresenter {
         removeSubCategories.add(categories[i]);
       }
     }
+    Category category = Category.fromJson({
+      "Id":"",
+      "Nombre":"Todos",
+      "idpadre":null,
+      "IconURL":"",
+      "businessId":businessId
+    });
+    removeSubCategories.insert(0, category);
     _view.setCategories(removeSubCategories);
   }
 }

@@ -4,8 +4,10 @@ import 'package:http/http.dart';
 import 'package:refrescate/data/HttpRemoteRepository.dart';
 import 'package:refrescate/data/RemoteRepository.dart';
 import 'package:refrescate/data/cubit/cart_cubit.dart';
+import 'package:refrescate/globalMethods.dart';
 import 'package:refrescate/model/CarritosItems.dart';
 import 'package:refrescate/model/Product.dart';
+import 'package:refrescate/ui/component/login/LoginScreen.dart';
 import 'package:refrescate/ui/component/productCart/ProductCartScreen.dart';
 import 'package:refrescate/ui/component/productInfo/ProductInfoPresenter.dart';
 
@@ -29,7 +31,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
   int selectCut = 0;
   bool loading = false;
   FocusNode _focus = new FocusNode();
-
+  bool user = false;
   @override
   void initState() {
     final cartCubit = context.read<CartCubit>();
@@ -171,6 +173,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                               BlocBuilder<CartCubit, CartState>(
                                   builder: (context, state) {
                                     if (state is CartLoaded) {
+                                      user = true;
                                       print("Widget Id " + widget.product.id);
                                       //Todo estaria bien hacerlo en otro sitio para capturar posible errores.
                                       carritoItem =
@@ -209,7 +212,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                                         color: Colors.red,
                                         size: 45.0,
                                       ),
-                                      onPressed: () => carritoItem.isNotEmpty && loading ==false ? onDelete( carritoItem.first.id) : null),
+                                      onPressed: () => user == true ? carritoItem.isNotEmpty && loading ==false ? onDelete( carritoItem.first.id) : null : GlobalMethods().pushAndReplacement(context, LoginScreen())),
                                   Text(
                                     " - ",
                                     textAlign: TextAlign.center,
@@ -227,7 +230,7 @@ class _ProductInfoScreenState extends State<ProductInfoScreen>
                                           color: Colors.red,
                                           size: 45.0,
                                         ),
-                                        onPressed: () =>loading == false ?  onAdd(): null),
+                                        onPressed: () => user == true ?loading == false ?  onAdd(): null : GlobalMethods().pushAndReplacement(context, LoginScreen())),
                                 ],
                               ),
                             ],

@@ -21,6 +21,8 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
   List<Category> mainCategories = [];
   List<Product> filterProducts = [];
   String categoryFilterId = "";
+
+
   @override
   void initState() {
     remoteRepository = HttpRemoteRepository(Client());
@@ -45,9 +47,8 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
             height: 120.0,
             alignment: Alignment.center,
             child: Scrollbar(
-              isAlwaysShown: true,
 
-              child: ListView.builder(
+              child:ListView.builder(
                   itemExtent: width / 4,
                   shrinkWrap: true,
                   primary: false,
@@ -96,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeView {
           Container(
             padding: EdgeInsets.only(left: 20.0),
             child: Text(
-              mainCategories[mainCategories.indexWhere((element) =>categoryFilterId == element.id)].nombre,
+              mainCategories.isEmpty?"Todos":mainCategories[mainCategories.indexWhere((element) =>categoryFilterId == element.id)].nombre,
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 16.0,
